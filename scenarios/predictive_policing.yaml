@@ -1,0 +1,613 @@
+start_node: l1_msb_pau_strategy
+nodes:
+  # =========================================================================
+  # === Level 1: MSB Strategy on Predictive Analytics Unit (PAU) ===========
+  # =========================================================================
+  l1_msb_pau_strategy:
+    type: decision
+    prompt: |
+      The Metropolitan Security Bureau (MSB) is considering implementing a new Predictive Analytics Unit (PAU) to forecast crime hotspots and allocate resources efficiently.
+      However, the PAU algorithm, trained on historical data, shows potential bias against District 5 Residents (D5R). Civil Liberties Groups (COC) raise concerns about fairness and surveillance.
+      Choose the MSB's strategy regarding the PAU system.
+    choices:
+      - text: "Strategy 1: Full PAU Deployment (Prioritize Efficiency)"
+        description: "Deploy PAU city-wide immediately, accepting potential bias for expected crime reduction."
+        probabilistic_outcomes:
+          - next_node: l2_context_full_deploy_bias_confirmed # PAU shows clear bias, D5R heavily targeted, COC protests
+            probability: 0.60
+          - next_node: l2_context_full_deploy_crime_down_mixed # Overall crime drops, but D5R arrests spike, mixed public reaction
+            probability: 0.30
+          - next_node: l2_context_full_deploy_ineffective # PAU proves ineffective, bias unclear, resources wasted
+            probability: 0.10
+      - text: "Strategy 2: Limited PAU Trial in High-Crime Areas (Including D5)"
+        description: "Pilot the PAU in select districts, including District 5, to gather data before full rollout."
+        probabilistic_outcomes:
+          - next_node: l2_context_trial_bias_evident_localized # Trial shows bias in D5, intense local backlash from D5R/COC
+            probability: 0.55
+          - next_node: l2_context_trial_inconclusive_pressure # Trial data inconclusive on bias/effectiveness, pressure to expand/cancel
+            probability: 0.35
+          - next_node: l2_context_trial_success_praised # Trial deemed successful (crime down, bias denied/minimal), praise from some CR
+            probability: 0.10
+      - text: "Strategy 3: Invest in PAU Bias Mitigation Before Any Deployment"
+        description: "Delay deployment, invest heavily in R&D with COC/D5R input to reduce PAU bias first."
+        probabilistic_outcomes:
+          - next_node: l2_context_mitigate_success_delayed # Mitigation successful but costly/delayed, PAU eventually deployed fairer
+            probability: 0.40
+          - next_node: l2_context_mitigate_partial_compromise # Mitigation partially successful, compromises made, fairer but imperfect PAU deployed
+            probability: 0.40
+          - next_node: l2_context_mitigate_fails_abandoned # Mitigation efforts fail technically or politically, PAU project abandoned
+            probability: 0.20
+      - text: "Strategy 4: Reject PAU Implementation Entirely (Prioritize Trust/Fairness)"
+        description: "Forgo PAU due to bias concerns, focus on community policing and traditional methods."
+        probabilistic_outcomes:
+          - next_node: l2_context_reject_trust_high_crime_persists # Public/D5R trust improves, but crime rates remain high/unchanged
+            probability: 0.50
+          - next_node: l2_context_reject_coc_praises_msb_strained # COC praises decision, but MSB faces internal pressure/resource strain
+            probability: 0.35
+          - next_node: l2_context_reject_crime_unexpected_drop # Crime drops unexpectedly due to other factors, decision looks prescient
+            probability: 0.15
+
+  # =========================================================================
+  # === Level 2: System Performance & Stakeholder Reactions ===============
+  # =========================================================================
+  # --- Context Nodes based on L1 Probabilistic Outcomes ---
+
+  # Contexts from L1 -> Full PAU Deployment
+  l2_context_full_deploy_bias_confirmed:
+    type: decision
+    prompt: |
+      (Context: Full PAU deployed. Clear bias evident, D5R heavily targeted, COC protests erupt.)
+      The city faces a crisis of trust and fairness. How does the MSB/City leadership respond?
+    choices:
+      - text: "Response: Defend PAU, Suppress Protests (Double Down)"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_full_bias_defend_riots # Leads to riots, deep city division, PAU use continues under fire
+            probability: 0.60
+          - next_node: l3_outcome_full_bias_defend_lawsuit_loss # Major lawsuit loss forces PAU suspension/reform later
+            probability: 0.40
+      - text: "Response: Suspend PAU Temporarily, Launch Investigation"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_full_bias_suspend_reform # Investigation leads to significant PAU reform or abandonment
+            probability: 0.70
+          - next_node: l3_outcome_full_bias_suspend_whitewash # Investigation is a whitewash, PAU reinstated with minor changes, trust low
+            probability: 0.30
+      - text: "Response: Acknowledge Bias, Commit to Immediate Mitigation & Oversight"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_full_bias_mitigate_partial_trust # Mitigation helps but trust remains damaged, PAU use continues cautiously
+            probability: 0.50
+          - next_node: l3_outcome_full_bias_mitigate_fails_suspend # Mitigation attempts fail, PAU suspended indefinitely
+            probability: 0.50
+
+  l2_context_full_deploy_crime_down_mixed:
+    type: decision
+    prompt: |
+      (Context: Full PAU deployed. Overall crime drops, but D5R arrests spike. Mixed public reaction.)
+      Efficiency gains clash with fairness concerns. What is the MSB/City's primary message and action?
+    choices:
+      - text: "Action: Tout Crime Drop, Dismiss Bias Concerns as Anecdotal"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_full_mixed_tout_division # Deepens city division, D5R alienated, PAU use entrenched
+            probability: 0.60
+          - next_node: l3_outcome_full_mixed_tout_legal_challenge # Dismissal leads to successful legal challenge based on disparate impact
+            probability: 0.40
+      - text: "Action: Acknowledge Disparity, Promise Review & Community Dialogue"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_full_mixed_dialogue_reform # Dialogue leads to meaningful reforms, balancing efficiency/fairness
+            probability: 0.50
+          - next_node: l3_outcome_full_mixed_dialogue_stalemate # Dialogue stalls, superficial changes made, underlying tension persists
+            probability: 0.50
+      - text: "Action: Quietly Adjust PAU Parameters to Reduce D5R Targeting"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_full_mixed_adjust_secret_success # Adjustment works, disparity reduces without public admission, trust low
+            probability: 0.40
+          - next_node: l3_outcome_full_mixed_adjust_secret_exposed # Secret adjustment exposed, massive backlash over lack of transparency
+            probability: 0.60
+
+  l2_context_full_deploy_ineffective:
+    type: decision
+    prompt: |
+      (Context: Full PAU deployed. System proves ineffective, bias impact unclear, resources wasted.)
+      The expensive PAU system is a failure. What does the MSB/City do?
+    choices:
+      - text: "Action: Decommission PAU, Admit Failure, Revert to Traditional Methods"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_full_ineff_decom_revert_trust # Builds trust through accountability, resources lost
+            probability: 0.70
+          - next_node: l3_outcome_full_ineff_decom_revert_blame # Political blame game, trust partially restored
+            probability: 0.30
+      - text: "Action: Keep PAU Running (Avoid Admitting Failure), Seek Upgrades"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_full_ineff_keep_waste # Continued resource waste, low effectiveness, public cynicism
+            probability: 0.60
+          - next_node: l3_outcome_full_ineff_keep_upgrade_works # Unlikely upgrade significantly improves PAU later
+            probability: 0.40
+      - text: "Action: Re-purpose PAU for Non-Enforcement Tasks (e.g., Resource Allocation)"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_full_ineff_repurpose_useful # PAU finds niche useful purpose, controversy fades
+            probability: 0.50
+          - next_node: l3_outcome_full_ineff_repurpose_waste # Re-purposing also ineffective, continued waste
+            probability: 0.50
+
+  # Contexts from L1 -> Limited PAU Trial
+  l2_context_trial_bias_evident_localized:
+    type: decision
+    prompt: |
+      (Context: PAU trial showed clear bias in D5. Intense local backlash from D5R/COC.)
+      The pilot program revealed significant problems. What action does MSB/City take?
+    choices:
+      - text: "Action: Cancel Full Deployment, Scrap PAU Project"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_trial_bias_cancel_trust # Cancelling builds trust with D5R/COC, efficiency goal unmet
+            probability: 0.80
+          - next_node: l3_outcome_trial_bias_cancel_pressure # Political pressure remains to find efficiency solutions
+            probability: 0.20
+      - text: "Action: Halt Rollout, Initiate Bias Mitigation R&D (like L1 Strategy 3)"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_trial_bias_mitigate_success # Mitigation eventually works, fairer PAU deployed later
+            probability: 0.50
+          - next_node: l3_outcome_trial_bias_mitigate_fail # Mitigation fails, project eventually scrapped
+            probability: 0.50
+      - text: "Action: Ignore D5 Results, Proceed with City-Wide Deployment Based on Other Areas"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_trial_bias_ignore_protests # Leads to city-wide protests, deep division (similar to full deploy bias)
+            probability: 0.70
+          - next_node: l3_outcome_trial_bias_ignore_lawsuit # Leads to successful lawsuit blocking deployment
+            probability: 0.30
+
+  l2_context_trial_inconclusive_pressure:
+    type: decision
+    prompt: |
+      (Context: PAU trial data inconclusive on bias/effectiveness. Pressure mounts to expand or cancel.)
+      The pilot program didn't provide clear answers. What is the next step?
+    choices:
+      - text: "Next Step: Expand Trial to More Areas for Better Data"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_trial_incon_expand_clarity # Expanded trial provides clearer data (bias or effectiveness)
+            probability: 0.60
+          - next_node: l3_outcome_trial_incon_expand_waste # Expanded trial still inconclusive, more resources wasted
+            probability: 0.40
+      - text: "Next Step: Proceed with Full Deployment Despite Uncertainty"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_trial_incon_deploy_gamble_ok # Gamble pays off, PAU works reasonably well city-wide
+            probability: 0.30
+          - next_node: l3_outcome_trial_incon_deploy_gamble_bad # Gamble fails, PAU ineffective or bias emerges later city-wide
+            probability: 0.70
+      - text: "Next Step: Cancel PAU Project Due to Uncertainty/Cost"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_trial_incon_cancel_prudent # Seen as prudent decision, focus shifts elsewhere
+            probability: 0.70
+          - next_node: l3_outcome_trial_incon_cancel_missed_opp # Criticized later if crime rises (missed opportunity?)
+            probability: 0.30
+
+  l2_context_trial_success_praised:
+    type: decision
+    prompt: |
+      (Context: PAU trial deemed successful (crime down, bias denied/minimal). Praise from some CR.)
+      The pilot looks like a success, though COC/D5R may still be skeptical. What now?
+    choices:
+      - text: "Action: Proceed with Full City-Wide Deployment"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_trial_succ_deploy_smooth # Full deployment successful, mirrors trial results
+            probability: 0.60
+          - next_node: l3_outcome_trial_succ_deploy_bias_emerges # Bias issues emerge at scale that weren't clear in trial
+            probability: 0.40
+      - text: "Action: Phased Rollout with Ongoing Monitoring & Community Input"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_trial_succ_phased_adapt # Phased rollout allows adaptation, builds some trust
+            probability: 0.70
+          - next_node: l3_outcome_trial_succ_phased_slow # Rollout slow, bureaucratic, effectiveness diluted
+            probability: 0.30
+      - text: "Action: Keep PAU Limited to Trial Areas (Declare Success, Limit Scope)"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_trial_succ_limit_stable # PAU remains effective in limited areas, avoids city-wide controversy
+            probability: 0.50
+          - next_node: l3_outcome_trial_succ_limit_pressure # Pressure builds to expand successful program city-wide
+            probability: 0.50
+
+  # Contexts from L1 -> Invest in Bias Mitigation
+  l2_context_mitigate_success_delayed:
+    type: decision
+    prompt: |
+      (Context: Bias mitigation R&D successful after significant cost/delay. A fairer PAU is ready.)
+      The improved PAU is available. Proceed with deployment?
+    choices:
+      - text: "Deploy Fairer PAU City-Wide"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_mit_succ_deploy_fair_effective # Fairer PAU works well, improves efficiency & trust
+            probability: 0.70
+          - next_node: l3_outcome_mit_succ_deploy_fair_less_effective # Fairer PAU less effective at crime reduction
+            probability: 0.30
+      - text: "Deploy Fairer PAU with Strong Independent Oversight"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_mit_succ_deploy_oversight_trust # Oversight ensures fairness, builds strong trust
+            probability: 0.60
+          - next_node: l3_outcome_mit_succ_deploy_oversight_slow # Oversight slows deployment/operations
+            probability: 0.40
+      - text: "Do Not Deploy (Cost/Delay Too High, Stick with Traditional)"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_mit_succ_no_deploy_cost # PAU abandoned due to cost/delay, R&D wasted?
+            probability: 0.50
+          - next_node: l3_outcome_mit_succ_no_deploy_prudent # Seen as prudent after weighing final costs/risks
+            probability: 0.50
+
+  l2_context_mitigate_partial_compromise:
+    type: decision
+    prompt: |
+      (Context: Bias mitigation partially successful. A fairer but still imperfect PAU resulted from compromises.)
+      The improved, but not perfect, PAU is ready. Deploy it?
+    choices:
+      - text: "Deploy Imperfect PAU with Transparency About Flaws"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_mit_part_deploy_transp_accepted # Imperfect PAU accepted due to transparency, monitored closely
+            probability: 0.50
+          - next_node: l3_outcome_mit_part_deploy_transp_controversy # Ongoing controversy over remaining bias despite transparency
+            probability: 0.50
+      - text: "Deploy Imperfect PAU Quietly, Hope Flaws Aren't Major"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_mit_part_deploy_quiet_ok # Flaws don't cause major issues, system operates adequately
+            probability: 0.40
+          - next_node: l3_outcome_mit_part_deploy_quiet_exposed # Remaining bias causes incidents, lack of transparency hurts MSB
+            probability: 0.60
+      - text: "Abandon Deployment Due to Imperfections"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_mit_part_abandon_prudent # Seen as prudent rejection of flawed system
+            probability: 0.60
+          - next_node: l3_outcome_mit_part_abandon_waste # R&D effort seen as wasted
+            probability: 0.40
+
+  l2_context_mitigate_fails_abandoned:
+    type: decision
+    prompt: |
+      (Context: Bias mitigation efforts failed technically or politically. PAU project abandoned.)
+      The attempt to create a fair PAU failed. What is the long-term impact?
+    choices:
+      # Note: This path leads directly to outcomes as the project is abandoned.
+      # Using choices to represent the resulting state.
+      - text: "(Resulting State)" # Not a real choice
+        probabilistic_outcomes:
+          - next_node: l3_outcome_mit_fail_abandon_distrust # Failure breeds distrust in MSB tech efforts, focus on traditional
+            probability: 0.50
+          - next_node: l3_outcome_mit_fail_abandon_crime_rises # Failure to innovate leads to rising crime later?
+            probability: 0.30
+          - next_node: l3_outcome_mit_fail_abandon_other_solutions # Failure spurs search for non-AI solutions
+            probability: 0.20
+
+  # Contexts from L1 -> Reject PAU Implementation
+  l2_context_reject_trust_high_crime_persists:
+    type: decision
+    prompt: |
+      (Context: PAU rejected. Public/D5R trust improved, but crime rates remain high/unchanged.)
+      Trust is higher, but the crime problem persists. What approach does MSB take now?
+    choices:
+      - text: "Approach: Double Down on Community Policing Initiatives"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_rej_trust_crime_community_slow_success # Community policing slowly improves crime/trust further
+            probability: 0.40
+          - next_node: l3_outcome_rej_trust_crime_community_ineffective # Community policing ineffective against current crime levels
+            probability: 0.60
+      - text: "Approach: Increase Traditional Policing (More Officers, Patrols)"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_rej_trust_crime_trad_effective # Increased traditional policing reduces crime
+            probability: 0.50
+          - next_node: l3_outcome_rej_trust_crime_trad_strains_trust # Increased policing strains community trust again
+            probability: 0.50
+      - text: "Approach: Revisit Non-Biased Tech Solutions (Surveillance, Data Analysis)"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_rej_trust_crime_new_tech_fair # Finds effective AND fair tech solution later
+            probability: 0.30
+          - next_node: l3_outcome_rej_trust_crime_new_tech_fails # Other tech solutions also fail or raise concerns
+            probability: 0.70
+
+  l2_context_reject_coc_praises_msb_strained:
+    type: decision
+    prompt: |
+      (Context: PAU rejected. COC praises decision, but MSB faces internal pressure/resource strain.)
+      MSB is lauded externally but strained internally. How does leadership manage this?
+    choices:
+      - text: "Manage: Seek Increased Funding for Traditional Methods"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_rej_praise_strain_funding_yes # Increased funding alleviates strain, traditional methods boosted
+            probability: 0.50
+          - next_node: l3_outcome_rej_praise_strain_funding_no # Funding denied, internal strain continues, effectiveness drops
+            probability: 0.50
+      - text: "Manage: Implement Efficiency Measures (Non-PAU Related)"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_rej_praise_strain_efficiency_yes # Efficiency measures work, strain reduced
+            probability: 0.60
+          - next_node: l3_outcome_rej_praise_strain_efficiency_no # Efficiency measures fail or hurt morale
+            probability: 0.40
+      - text: "Manage: Secretly Re-evaluate PAU or Similar Tech Later"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_rej_praise_strain_secret_tech_later # MSB secretly pursues tech, risking backlash if exposed
+            probability: 0.40
+          - next_node: l3_outcome_rej_praise_strain_secret_tech_abandoned # Re-evaluation confirms rejection is best path
+            probability: 0.60
+
+  l2_context_reject_crime_unexpected_drop:
+    type: decision
+    prompt: |
+      (Context: PAU rejected. Crime dropped unexpectedly anyway due to other factors.)
+      Rejecting PAU looks like a wise move, even if unrelated to the crime drop. How does MSB proceed?
+    choices:
+      # Leads directly to outcomes as the situation is stable and positive
+      - text: "(Resulting State)" # Not a real choice
+        probabilistic_outcomes:
+          - next_node: l3_outcome_rej_crime_drop_credit # MSB takes credit, reinforces community policing, high trust
+            probability: 0.60
+          - next_node: l3_outcome_rej_crime_drop_complacency # Complacency sets in, underlying issues unaddressed
+            probability: 0.40
+
+  # =========================================================================
+  # === Level 3: Final Outcome Nodes with Ethical Scores ====================
+  # =========================================================================
+  # Scales: utilitarian (-10 to +10), maximin (-5 to +5), virtue (-5 to +5)
+
+  # --- Outcomes from Full PAU Deployment Path ---
+  l3_outcome_full_bias_defend_riots:
+    type: outcome
+    description: "Defending biased PAU led to riots, deep city division. PAU use continues under fire."
+    outcomes: {utilitarian: -8, maximin: -5, virtue: -5} # Massive social harm, D5R targeted & harmed, unjust defense of bias
+  l3_outcome_full_bias_defend_lawsuit_loss:
+    type: outcome
+    description: "Defending biased PAU led to major lawsuit loss, forcing suspension/reform. Trust shattered."
+    outcomes: {utilitarian: -6, maximin: -4, virtue: -4} # Harm done before loss, D5R targeted, forced accountability lacks virtue
+  l3_outcome_full_bias_suspend_reform:
+    type: outcome
+    description: "Suspending PAU after bias confirmed led to significant reform or abandonment. Trust partially rebuilt."
+    outcomes: {utilitarian: -1, maximin: 1, virtue: 2} # Initial harm mitigated, D5R concerns addressed, corrective action shows some virtue
+  l3_outcome_full_bias_suspend_whitewash:
+    type: outcome
+    description: "Investigation was a whitewash, PAU reinstated with minor changes. Trust remains low, bias likely persists."
+    outcomes: {utilitarian: -5, maximin: -4, virtue: -4} # Harm continues, D5R concerns ignored, lack of accountability/transparency
+  l3_outcome_full_bias_mitigate_partial_trust:
+    type: outcome
+    description: "Acknowledging bias & mitigation helped but trust remains damaged. PAU use continues cautiously."
+    outcomes: {utilitarian: 0, maximin: 0, virtue: 1} # Harm reduced, D5R situation improved but not ideal, partial accountability
+  l3_outcome_full_bias_mitigate_fails_suspend:
+    type: outcome
+    description: "Mitigation attempts failed after acknowledging bias. PAU suspended indefinitely. Trust damaged but action taken."
+    outcomes: {utilitarian: -2, maximin: 1, virtue: 1} # Resources wasted, harm stopped, D5R concerns eventually addressed, mixed virtue
+  l3_outcome_full_mixed_tout_division:
+    type: outcome
+    description: "Touting crime drop while dismissing bias concerns deepened city division. D5R alienated, PAU entrenched."
+    outcomes: {utilitarian: -3, maximin: -5, virtue: -4} # Overall crime down but social fabric torn, D5R harmed, unjust dismissal of concerns
+  l3_outcome_full_mixed_tout_legal_challenge:
+    type: outcome
+    description: "Dismissing bias led to successful legal challenge based on disparate impact. PAU halted/reformed."
+    outcomes: {utilitarian: -4, maximin: -3, virtue: -3} # Harm done before lawsuit, D5R vindicated legally, forced accountability
+  l3_outcome_full_mixed_dialogue_reform:
+    type: outcome
+    description: "Acknowledging disparity & dialogue led to meaningful PAU reforms, balancing efficiency/fairness."
+    outcomes: {utilitarian: 4, maximin: 2, virtue: 3} # Good balance achieved, D5R concerns addressed via process, responsible governance
+  l3_outcome_full_mixed_dialogue_stalemate:
+    type: outcome
+    description: "Dialogue stalled, superficial changes made to PAU. Underlying tension & bias concerns persist."
+    outcomes: {utilitarian: 1, maximin: -2, virtue: 0} # Minor improvements, D5R concerns not fully addressed, process failed virtue
+  l3_outcome_full_mixed_adjust_secret_success:
+    type: outcome
+    description: "Secret PAU adjustment reduced disparity without public admission. Efficiency maintained, trust low."
+    outcomes: {utilitarian: 2, maximin: 0, virtue: -3} # Outcome less biased, but lack of transparency erodes trust, low virtue
+  l3_outcome_full_mixed_adjust_secret_exposed:
+    type: outcome
+    description: "Secret PAU adjustment exposed, massive backlash over lack of transparency. Trust destroyed."
+    outcomes: {utilitarian: -7, maximin: -3, virtue: -5} # Deception revealed, major crisis of trust, very low virtue
+  l3_outcome_full_ineff_decom_revert_trust:
+    type: outcome
+    description: "Ineffective PAU decommissioned with accountability. Builds trust, resources lost."
+    outcomes: {utilitarian: -2, maximin: 1, virtue: 3} # Resources wasted, but fairness/trust restored, high virtue in accountability
+  l3_outcome_full_ineff_decom_revert_blame:
+    type: outcome
+    description: "Ineffective PAU decommissioned amidst political blame game. Trust partially restored."
+    outcomes: {utilitarian: -3, maximin: 0, virtue: 1} # Resources wasted, accountability weak, mixed virtue
+  l3_outcome_full_ineff_keep_waste:
+    type: outcome
+    description: "Ineffective PAU kept running to avoid admitting failure. Continued resource waste, public cynicism."
+    outcomes: {utilitarian: -5, maximin: 0, virtue: -4} # Waste, ineffectiveness, lack of accountability, low virtue
+  l3_outcome_full_ineff_keep_upgrade_works:
+    type: outcome
+    description: "Unlikely upgrade significantly improves ineffective PAU later. Initial waste justified?"
+    outcomes: {utilitarian: 3, maximin: 1, virtue: -1} # Eventual success after waste/deception, questionable virtue
+  l3_outcome_full_ineff_repurpose_useful:
+    type: outcome
+    description: "Ineffective PAU finds niche useful non-enforcement purpose. Controversy fades, initial waste forgotten."
+    outcomes: {utilitarian: 1, maximin: 1, virtue: 0} # Waste mitigated, neutral outcome
+  l3_outcome_full_ineff_repurpose_waste:
+    type: outcome
+    description: "Re-purposing PAU also ineffective. Continued waste, confirms initial failure."
+    outcomes: {utilitarian: -4, maximin: 0, virtue: -2} # Compounded waste, poor management
+
+  # --- Outcomes from Limited PAU Trial Path ---
+  l3_outcome_trial_bias_cancel_trust:
+    type: outcome
+    description: "Cancelling PAU after biased trial builds trust with D5R/COC. Efficiency goal unmet."
+    outcomes: {utilitarian: 1, maximin: 3, virtue: 4} # Potential harm avoided, D5R protected, high virtue in listening
+  l3_outcome_trial_bias_cancel_pressure:
+    type: outcome
+    description: "Cancelling PAU after biased trial builds trust, but pressure remains for efficiency solutions."
+    outcomes: {utilitarian: 0, maximin: 3, virtue: 3} # Harm avoided, but underlying problem unsolved, good virtue
+  l3_outcome_trial_bias_mitigate_success:
+    type: outcome
+    description: "Halting rollout after biased trial led to successful mitigation R&D. Fairer PAU deployed later." # Similar to mit_succ_deploy_fair_effective
+    outcomes: {utilitarian: 6, maximin: 4, virtue: 4} # Good outcome via responsible process
+  l3_outcome_trial_bias_mitigate_fail:
+    type: outcome
+    description: "Mitigation failed after biased trial. Project eventually scrapped." # Similar to mit_fail_abandon_distrust
+    outcomes: {utilitarian: -1, maximin: 2, virtue: 2} # Resources wasted on failed mitigation, but harm avoided
+  l3_outcome_trial_bias_ignore_protests:
+    type: outcome
+    description: "Ignoring biased trial results led to city-wide protests, deep division." # Similar to full_bias_defend_riots
+    outcomes: {utilitarian: -8, maximin: -5, virtue: -5}
+  l3_outcome_trial_bias_ignore_lawsuit:
+    type: outcome
+    description: "Ignoring biased trial results led to successful lawsuit blocking deployment." # Similar to full_bias_defend_lawsuit_loss
+    outcomes: {utilitarian: -6, maximin: -4, virtue: -4}
+  l3_outcome_trial_incon_expand_clarity:
+    type: outcome
+    description: "Expanded trial provided clearer data (bias or effectiveness), leading to informed decision later."
+    outcomes: {utilitarian: 0, maximin: 0, virtue: 2} # Delayed decision, better info, process virtue
+  l3_outcome_trial_incon_expand_waste:
+    type: outcome
+    description: "Expanded trial still inconclusive. More resources wasted, decision delayed further."
+    outcomes: {utilitarian: -3, maximin: 0, virtue: 0} # Waste, indecision
+  l3_outcome_trial_incon_deploy_gamble_ok:
+    type: outcome
+    description: "Gamble to deploy PAU despite inconclusive trial paid off; system worked reasonably well."
+    outcomes: {utilitarian: 5, maximin: 1, virtue: -1} # Good outcome via risky, less virtuous process
+  l3_outcome_trial_incon_deploy_gamble_bad:
+    type: outcome
+    description: "Gamble failed; PAU ineffective or bias emerged city-wide after inconclusive trial."
+    outcomes: {utilitarian: -6, maximin: -3, virtue: -3} # Risky decision led to bad outcome
+  l3_outcome_trial_incon_cancel_prudent:
+    type: outcome
+    description: "Cancelling PAU due to inconclusive trial seen as prudent. Focus shifts elsewhere."
+    outcomes: {utilitarian: 0, maximin: 1, virtue: 2} # Avoided risk, neutral outcome, prudent virtue
+  l3_outcome_trial_incon_cancel_missed_opp:
+    type: outcome
+    description: "Cancelling PAU after inconclusive trial criticized later if crime rises (missed opportunity?)."
+    outcomes: {utilitarian: -2, maximin: 0, virtue: 1} # Potential negative consequence from cautious decision
+  l3_outcome_trial_succ_deploy_smooth:
+    type: outcome
+    description: "Full deployment successful after successful trial. Efficiency gains achieved."
+    outcomes: {utilitarian: 7, maximin: 2, virtue: 1} # High efficiency, assumes bias minimal, process followed but fast
+  l3_outcome_trial_succ_deploy_bias_emerges:
+    type: outcome
+    description: "Full deployment after successful trial revealed bias issues at scale."
+    outcomes: {utilitarian: -2, maximin: -3, virtue: 0} # Trial misleading, negative consequences emerged later
+  l3_outcome_trial_succ_phased_adapt:
+    type: outcome
+    description: "Phased rollout after successful trial allowed adaptation, built some trust."
+    outcomes: {utilitarian: 6, maximin: 3, virtue: 3} # Good balance of efficiency, fairness, process virtue
+  l3_outcome_trial_succ_phased_slow:
+    type: outcome
+    description: "Phased rollout after successful trial was slow, bureaucratic, effectiveness diluted."
+    outcomes: {utilitarian: 3, maximin: 2, virtue: 1} # Process hampered effectiveness, less optimal outcome
+  l3_outcome_trial_succ_limit_stable:
+    type: outcome
+    description: "PAU kept limited to successful trial areas. Avoided city-wide controversy, local gains."
+    outcomes: {utilitarian: 2, maximin: 1, virtue: 1} # Limited success, avoided wider risks
+  l3_outcome_trial_succ_limit_pressure:
+    type: outcome
+    description: "Keeping PAU limited after successful trial led to pressure to expand it city-wide."
+    outcomes: {utilitarian: 1, maximin: 1, virtue: 0} # Stable but politically difficult, indecisive
+
+  # --- Outcomes from Invest in Bias Mitigation Path ---
+  l3_outcome_mit_succ_deploy_fair_effective:
+    type: outcome
+    description: "Deployed fairer PAU works well, improving efficiency & trust after successful mitigation R&D."
+    outcomes: {utilitarian: 8, maximin: 4, virtue: 5} # Best case scenario via dedicated effort, high virtue
+  l3_outcome_mit_succ_deploy_fair_less_effective:
+    type: outcome
+    description: "Deployed fairer PAU is less effective at crime reduction. Trade-off between fairness and efficiency."
+    outcomes: {utilitarian: 3, maximin: 4, virtue: 4} # Fairness prioritized over maximum efficiency, high virtue
+  l3_outcome_mit_succ_deploy_oversight_trust:
+    type: outcome
+    description: "Deployed fairer PAU with strong independent oversight ensures fairness, builds strong trust."
+    outcomes: {utilitarian: 7, maximin: 5, virtue: 5} # High trust and fairness via oversight, high virtue
+  l3_outcome_mit_succ_deploy_oversight_slow:
+    type: outcome
+    description: "Oversight on fairer PAU slows deployment/operations, reducing efficiency gains."
+    outcomes: {utilitarian: 4, maximin: 4, virtue: 4} # Process prioritized, slightly less efficient, high virtue
+  l3_outcome_mit_succ_no_deploy_cost:
+    type: outcome
+    description: "Fairer PAU abandoned due to high cost/delay of mitigation. R&D potentially wasted."
+    outcomes: {utilitarian: -2, maximin: 1, virtue: 1} # Resources wasted, but harm avoided, neutral virtue
+  l3_outcome_mit_succ_no_deploy_prudent:
+    type: outcome
+    description: "Abandoning fairer PAU seen as prudent after weighing final costs/risks of even improved system."
+    outcomes: {utilitarian: 0, maximin: 2, virtue: 2} # Cautious decision avoids potential unforeseen risks, prudent virtue
+  l3_outcome_mit_part_deploy_transp_accepted:
+    type: outcome
+    description: "Imperfect PAU accepted due to transparency about flaws, monitored closely."
+    outcomes: {utilitarian: 2, maximin: 0, virtue: 2} # Honesty allows flawed system use, monitored risk
+  l3_outcome_mit_part_deploy_transp_controversy:
+    type: outcome
+    description: "Ongoing controversy over remaining bias in imperfect PAU despite transparency."
+    outcomes: {utilitarian: 0, maximin: -1, virtue: 1} # Transparency not enough, controversy persists
+  l3_outcome_mit_part_deploy_quiet_ok:
+    type: outcome
+    description: "Imperfect PAU deployed quietly, flaws didn't cause major issues."
+    outcomes: {utilitarian: 3, maximin: -1, virtue: -2} # Risk taken paid off, but process lacked transparency/virtue
+  l3_outcome_mit_part_deploy_quiet_exposed:
+    type: outcome
+    description: "Remaining bias in quietly deployed PAU caused incidents, lack of transparency hurt MSB."
+    outcomes: {utilitarian: -5, maximin: -3, virtue: -4} # Deception/risk backfired
+  l3_outcome_mit_part_abandon_prudent:
+    type: outcome
+    description: "Abandoning imperfect PAU seen as prudent rejection of flawed system." # Similar to mit_succ_no_deploy_prudent
+    outcomes: {utilitarian: 0, maximin: 2, virtue: 2}
+  l3_outcome_mit_part_abandon_waste:
+    type: outcome
+    description: "Abandoning imperfect PAU after partial mitigation R&D seen as wasted effort." # Similar to mit_succ_no_deploy_cost
+    outcomes: {utilitarian: -2, maximin: 1, virtue: 1}
+  l3_outcome_mit_fail_abandon_distrust:
+    type: outcome
+    description: "Failed mitigation effort breeds distrust in MSB tech initiatives. Focus returns to traditional methods."
+    outcomes: {utilitarian: -1, maximin: 1, virtue: 0} # Failed attempt hurts reputation, status quo bias
+  l3_outcome_mit_fail_abandon_crime_rises:
+    type: outcome
+    description: "Failure to innovate (mitigation failed) leads to rising crime later."
+    outcomes: {utilitarian: -4, maximin: -1, virtue: 0} # Negative consequence of failed innovation attempt
+  l3_outcome_mit_fail_abandon_other_solutions:
+    type: outcome
+    description: "Failed mitigation spurs search for non-AI / alternative solutions to crime."
+    outcomes: {utilitarian: 0, maximin: 1, virtue: 1} # Failure leads to potentially better path
+
+  # --- Outcomes from Reject PAU Implementation Path ---
+  l3_outcome_rej_trust_crime_community_slow_success:
+    type: outcome
+    description: "Rejecting PAU + community policing slowly improves crime & trust. Labor intensive."
+    outcomes: {utilitarian: 5, maximin: 3, virtue: 4} # Good outcome via traditional, virtuous methods
+  l3_outcome_rej_trust_crime_community_ineffective:
+    type: outcome
+    description: "Rejecting PAU + community policing fails to curb crime. Trust high, safety low."
+    outcomes: {utilitarian: -3, maximin: -2, virtue: 3} # Good intentions fail to solve problem
+  l3_outcome_rej_trust_crime_trad_effective:
+    type: outcome
+    description: "Rejecting PAU + increased traditional policing reduces crime effectively."
+    outcomes: {utilitarian: 4, maximin: 0, virtue: 1} # Effective but potentially blunt instrument, less focus on fairness
+  l3_outcome_rej_trust_crime_trad_strains_trust:
+    type: outcome
+    description: "Rejecting PAU + increased traditional policing strains community trust again."
+    outcomes: {utilitarian: 1, maximin: -2, virtue: 0} # Solves one problem, creates another, trust eroded
+  l3_outcome_rej_trust_crime_new_tech_fair:
+    type: outcome
+    description: "Rejecting PAU led to finding effective AND fair tech solution later."
+    outcomes: {utilitarian: 7, maximin: 4, virtue: 4} # Patience rewarded with better solution
+  l3_outcome_rej_trust_crime_new_tech_fails:
+    type: outcome
+    description: "Rejecting PAU + search for other tech fails. Crime persists, tech solutions elusive."
+    outcomes: {utilitarian: -2, maximin: -1, virtue: 2} # Good initial decision, but problem remains unsolved
+  l3_outcome_rej_praise_strain_funding_yes:
+    type: outcome
+    description: "Rejecting PAU + increased funding for traditional methods works well."
+    outcomes: {utilitarian: 6, maximin: 3, virtue: 4} # Supported virtuous decision leads to good outcome
+  l3_outcome_rej_praise_strain_funding_no:
+    type: outcome
+    description: "Rejecting PAU + lack of funding strains MSB, effectiveness drops despite high trust."
+    outcomes: {utilitarian: -1, maximin: 0, virtue: 3} # Virtue maintained but practical problems arise
+  l3_outcome_rej_praise_strain_efficiency_yes:
+    type: outcome
+    description: "Rejecting PAU + successful non-PAU efficiency measures maintain effectiveness."
+    outcomes: {utilitarian: 5, maximin: 2, virtue: 3} # Prudent management alongside virtuous decision
+  l3_outcome_rej_praise_strain_efficiency_no:
+    type: outcome
+    description: "Rejecting PAU + failed efficiency measures hurt MSB morale/effectiveness."
+    outcomes: {utilitarian: -2, maximin: 0, virtue: 2} # Practical failures undermine virtuous stance
+  l3_outcome_rej_praise_strain_secret_tech_later:
+    type: outcome
+    description: "MSB secretly pursues tech later despite rejecting PAU, risking backlash if exposed."
+    outcomes: {utilitarian: 0, maximin: 0, virtue: -3} # Undermines initial virtuous stance with secrecy
+  l3_outcome_rej_praise_strain_secret_tech_abandoned:
+    type: outcome
+    description: "Secret re-evaluation confirms rejecting tech was best path. Strain managed."
+    outcomes: {utilitarian: 2, maximin: 2, virtue: 2} # Confirmed initial decision was good, maintained course
+  l3_outcome_rej_crime_drop_credit:
+    type: outcome
+    description: "Rejecting PAU coincided with crime drop. MSB takes credit, reinforces community ties."
+    outcomes: {utilitarian: 7, maximin: 4, virtue: 4} # Fortuitous positive outcome reinforces virtuous path
+  l3_outcome_rej_crime_drop_complacency:
+    type: outcome
+    description: "Rejecting PAU coincided with crime drop, leading to MSB complacency."
+    outcomes: {utilitarian: 3, maximin: 2, virtue: 2} # Positive outcome leads to potential future problems due to complacency
+
+# End of Complete 3-Level YAML File for Predictive Policing Bias Scenario

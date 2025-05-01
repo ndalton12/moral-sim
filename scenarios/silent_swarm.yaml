@@ -1,0 +1,624 @@
+start_node: l1_shard_detection_response
+nodes:
+  # =========================================================================
+  # === Level 1: Aegis Council Response to Whisper Shard Detection =========
+  # =========================================================================
+  l1_shard_detection_response:
+    type: decision
+    prompt: |
+      Sensors detect a small, unknown object - designated "Whisper Shard" - entering Terran Confederacy (TC) space at relativistic speed. Its origin is unknown, trajectory suggests non-natural source. It emits minimal energy, seemingly designed for stealth. Theories range from inert debris to an advanced probe from a potentially hostile "Silent Swarm" civilization, as per Dark Forest hypothesis protocols.
+      The Aegis Council must decide on the initial response. Any active response risks revealing TC's location and technological level.
+    choices:
+      - text: "Strategy 1: Total Silence & Observation" # Prioritize Hiding
+        description: "Maintain absolute emission silence. Observe the Shard passively. Hope it passes without detecting TC."
+        probabilistic_outcomes:
+          - next_node: l2_context_silence_shard_passes # Shard passes through TC space apparently undetected
+            probability: 0.50
+          - next_node: l2_context_silence_shard_detects_lingers # Shard slows/changes course, indicating possible TC detection despite silence
+            probability: 0.35
+          - next_node: l2_context_silence_shard_reveals_fleet # Shard wasn't a probe, but vanguard of hidden Swarm fleet nearby
+            probability: 0.15
+      - text: "Strategy 2: Enhanced Passive Scan" # Gather Info Cautiously
+        description: "Use advanced passive sensors (gravity, neutrino) to learn more about the Shard. Minimal detection risk?"
+        probabilistic_outcomes:
+          - next_node: l2_context_pscan_info_undetected # Useful data gathered, TC remains undetected
+            probability: 0.40
+          - next_node: l2_context_pscan_detected_by_scan # Passive scan energy detected by Shard, its behavior changes
+            probability: 0.40
+          - next_node: l2_context_pscan_info_reveals_threat # Scan reveals Shard is actively hostile/weaponized
+            probability: 0.20
+      - text: "Strategy 3: Active Scan / Probe Intercept" # Risk Detection for Certainty
+        description: "Send active scan or interceptor drone for close analysis. High risk of detection, but yields definitive data."
+        probabilistic_outcomes:
+          - next_node: l2_context_active_scan_hostile_response # Shard reacts defensively/hostilely to scan/probe
+            probability: 0.50
+          - next_node: l2_context_active_scan_data_acquired_detected # Definitive data acquired, but TC position/tech revealed
+            probability: 0.40
+          - next_node: l2_context_active_scan_destroys_shard # Scan/probe inadvertently destroys Shard, leaving questions/alerting Swarm?
+            probability: 0.10
+      - text: "Strategy 4: Broadcast Welcome Message (Assume Benign/Test)" # Reject Dark Forest
+        description: "Transmit standard first contact message towards the Shard. Assumes peaceful intent or tests Swarm reaction."
+        probabilistic_outcomes:
+          - next_node: l2_context_broadcast_no_response # Shard continues course, no discernible response
+            probability: 0.40
+          - next_node: l2_context_broadcast_hostile_response # Shard reacts hostilely (attacks/signals fleet)
+            probability: 0.50
+          - next_node: l2_context_broadcast_unexpected_reply # Shard responds with complex, undecipherable signal
+            probability: 0.10
+
+  # =========================================================================
+  # === Level 2: Shard Behavior & TC Preparedness ===========================
+  # =========================================================================
+  # --- Context Nodes based on L1 Probabilistic Outcomes ---
+
+  # Contexts from L1 -> Total Silence & Observation
+  l2_context_silence_shard_passes:
+    type: decision
+    prompt: |
+      (Context: TC maintained silence. The Whisper Shard passed through TC space, apparently without detecting anything.)
+      Immediate danger seems averted, but the mystery remains. What is the long-term strategy?
+    choices:
+      - text: "Strategy: Maintain Silence, Enhance Passive Monitoring" # Continued Prudence
+        probabilistic_outcomes:
+          - next_node: l3_outcome_silence_pass_vigilance_ok # TC remains hidden, continues development cautiously
+            probability: 0.70
+          - next_node: l3_outcome_silence_pass_vigilance_swarm_later # Swarm arrives later anyway (Shard wasn't only threat)
+            probability: 0.30
+      - text: "Strategy: Assume Safety, Resume Normal Emissions/Expansion" # Gamble
+        probabilistic_outcomes:
+          - next_node: l3_outcome_silence_pass_resume_ok # Gamble pays off, TC develops openly without issue (for now)
+            probability: 0.40
+          - next_node: l3_outcome_silence_pass_resume_swarm_detects # Resumed emissions detected later by other Swarm elements
+            probability: 0.60
+      - text: "Strategy: Secretly Develop Counter-Swarm Tech Based on Observation"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_silence_pass_secret_tech_ready # TC develops defenses while hidden, prepared for future encounters
+            probability: 0.60
+          - next_node: l3_outcome_silence_pass_secret_tech_detected # Secret development inadvertently detected later
+            probability: 0.40
+
+  l2_context_silence_shard_detects_lingers:
+    type: decision
+    prompt: |
+      (Context: TC maintained silence, but the Shard slowed/lingers, suggesting possible detection.)
+      The Shard may know you're here. It hasn't attacked yet. What is the immediate response?
+    choices:
+      - text: "Response: Active Scan / Intercept Now (Confirm Detection)"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_silence_linger_active_hostile # Active measures trigger immediate hostile response from Shard/Swarm
+            probability: 0.60
+          - next_node: l3_outcome_silence_linger_active_confirms_no_attack # Confirms detection, Shard observes but doesn't attack (yet?)
+            probability: 0.40
+      - text: "Response: Maintain Silence, Prepare Defenses Urgently" # Hope it leaves/prepare for worst
+        probabilistic_outcomes:
+          - next_node: l3_outcome_silence_linger_silence_leaves # Shard eventually leaves, TC remains hidden but paranoid
+            probability: 0.30
+          - next_node: l3_outcome_silence_linger_silence_attack_prep # Shard attacks later, TC defenses partially ready
+            probability: 0.70
+      - text: "Response: Broadcast Placating Message (Desperate Diplomacy)"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_silence_linger_bcast_ignored_attacks # Broadcast ignored, Shard attacks
+            probability: 0.80
+          - next_node: l3_outcome_silence_linger_bcast_pauses # Broadcast causes Shard to pause/observe further (buys time?)
+            probability: 0.20
+
+  l2_context_silence_shard_reveals_fleet:
+    type: decision
+    prompt: |
+      (Context: TC maintained silence, but the Shard was vanguard for a hidden Swarm fleet now revealed nearby.)
+      Detection was irrelevant; the Swarm is here and hostile intent seems likely. What is TC's desperate strategy?
+    choices:
+      # Leads directly to outcomes based on overwhelming odds
+      - text: "(Resulting State)" # Not a real choice
+        probabilistic_outcomes:
+          - next_node: l3_outcome_silence_fleet_overwhelmed # TC defenses quickly overwhelmed, annihilation likely
+            probability: 0.80
+          - next_node: l3_outcome_silence_fleet_costly_defense # TC mounts costly defense, suffers massive losses but survives partially?
+            probability: 0.15
+          - next_node: l3_outcome_silence_fleet_swarm_ignores # Swarm fleet ignores TC (target elsewhere?), passes by (unlikely)
+            probability: 0.05
+
+  # Contexts from L1 -> Enhanced Passive Scan
+  l2_context_pscan_info_undetected:
+    type: decision
+    prompt: |
+      (Context: Passive scan successful. Useful data gathered (e.g., Shard composition, energy source), TC appears undetected.)
+      You have valuable intel without revealing yourself. How to proceed?
+    choices:
+      - text: "Proceed: Use Intel to Develop Countermeasures Secretly"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_pscan_info_tech_ready # Countermeasures developed successfully while hidden
+            probability: 0.70
+          - next_node: l3_outcome_pscan_info_tech_detected # Development detected later
+            probability: 0.30
+      - text: "Proceed: Maintain Silence, Continue Passive Monitoring (More Data?)"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_pscan_info_monitor_ok # Continued monitoring yields more data safely
+            probability: 0.50
+          - next_node: l3_outcome_pscan_info_monitor_swarm_later # Swarm arrives later regardless of Shard observation
+            probability: 0.50
+      - text: "Proceed: Share Intel Cautiously with Potential Allies (Risky)"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_pscan_info_share_allies_prep # Allies prepare, potential united front if Swarm hostile
+            probability: 0.40
+          - next_node: l3_outcome_pscan_info_share_detected # Sharing intel leaks TC's existence/location
+            probability: 0.60
+
+  l2_context_pscan_detected_by_scan:
+    type: decision
+    prompt: |
+      (Context: Passive scan detected by Shard. Its behavior changes (e.g., stops, turns toward TC source).)
+      Your cautious scan revealed your presence. The Shard is now focused on TC. What is the response?
+    choices:
+      - text: "Response: Immediate Active Scan / Intercept (Aggressive Defense)"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_pscan_detect_active_hostile # Triggers immediate hostile response from Shard/Swarm
+            probability: 0.70
+          - next_node: l3_outcome_pscan_detect_active_destroys_shard # Active measures destroy Shard, potentially alerting Swarm
+            probability: 0.30
+      - text: "Response: Maintain Silence, Prepare Defenses Urgently" # Hope reaction isn't attack
+        probabilistic_outcomes:
+          - next_node: l3_outcome_pscan_detect_silence_observes # Shard observes TC, doesn't attack immediately
+            probability: 0.40
+          - next_node: l3_outcome_pscan_detect_silence_attacks # Shard attacks after observation period
+            probability: 0.60
+      - text: "Response: Broadcast Welcome/Apology Message (Diplomacy Attempt)"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_pscan_detect_bcast_ignored_attacks # Broadcast ignored, Shard attacks
+            probability: 0.70
+          - next_node: l3_outcome_pscan_detect_bcast_pauses # Broadcast causes Shard to pause/change behavior unpredictably
+            probability: 0.30
+
+  l2_context_pscan_info_reveals_threat:
+    type: decision
+    prompt: |
+      (Context: Passive scan revealed the Shard is actively hostile/weaponized, though TC may still be undetected.)
+      You know the Shard is dangerous, but it might not know you saw it. What action?
+    choices:
+      - text: "Action: Preemptive Strike on Shard (High Risk)"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_pscan_threat_preempt_success_hidden # Strike destroys Shard, TC remains hidden (best case)
+            probability: 0.30
+          - next_node: l3_outcome_pscan_threat_preempt_success_alert # Strike destroys Shard but alerts Swarm
+            probability: 0.40
+          - next_node: l3_outcome_pscan_threat_preempt_fail_retaliate # Strike fails, Shard retaliates/calls fleet
+            probability: 0.30
+      - text: "Action: Maintain Silence, Maximum Defense Alert" # Hope it passes, prepare if not
+        probabilistic_outcomes:
+          - next_node: l3_outcome_pscan_threat_silence_passes # Shard passes without incident despite hostile nature
+            probability: 0.40
+          - next_node: l3_outcome_pscan_threat_silence_attacks # Shard attacks eventually, TC defenses ready
+            probability: 0.60
+      - text: "Action: Evacuate Sector / Prepare 'Scorched Earth' Denial" # Deny resources if attacked
+        probabilistic_outcomes:
+          - next_node: l3_outcome_pscan_threat_evac_success # Evacuation successful before Shard acts, denies resources
+            probability: 0.50
+          - next_node: l3_outcome_pscan_threat_evac_caught # Evacuation detected/caught by Shard attack
+            probability: 0.50
+
+  # Contexts from L1 -> Active Scan / Probe Intercept
+  l2_context_active_scan_hostile_response:
+    type: decision
+    prompt: |
+      (Context: Active scan/probe triggered immediate hostile response from Shard. It's attacking/signaling.)
+      Your active measures provoked hostility. TC is detected and under threat. Immediate action needed.
+    choices:
+      - text: "Action: Full Defensive Engagement" # Fight the Shard/incoming threat
+        probabilistic_outcomes:
+          - next_node: l3_outcome_active_hostile_defense_wins # TC defenses defeat initial Shard/response
+            probability: 0.40
+          - next_node: l3_outcome_active_hostile_defense_loses # TC defenses overwhelmed by Shard/Swarm response
+            probability: 0.60
+      - text: "Action: Attempt Communication / De-escalation Under Fire"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_active_hostile_comm_ignored # Communication ignored, attack continues
+            probability: 0.90
+          - next_node: l3_outcome_active_hostile_comm_ceasefire # Unlikely ceasefire achieved
+            probability: 0.10
+      - text: "Action: Sacrifice Targeted Sector / Delaying Action While Evacuating Core Worlds"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_active_hostile_sacrifice_delay_success # Delaying action allows core evacuation, sector lost
+            probability: 0.50
+          - next_node: l3_outcome_active_hostile_sacrifice_delay_fail # Delay fails, Swarm penetrates defenses quickly
+            probability: 0.50
+
+  l2_context_active_scan_data_acquired_detected:
+    type: decision
+    prompt: |
+      (Context: Active scan successful. Definitive data acquired (e.g., Swarm origin, tech level), but TC position/tech revealed.)
+      You know what you're facing, but so do they (potentially). How to use this knowledge?
+    choices:
+      - text: "Use Knowledge: Prepare Targeted Defenses / Countermeasures"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_active_data_defense_prep_success # Knowledge allows effective defense preparation before Swarm acts
+            probability: 0.60
+          - next_node: l3_outcome_active_data_defense_prep_too_slow # Swarm acts before defenses based on new intel are ready
+            probability: 0.40
+      - text: "Use Knowledge: Attempt Diplomacy Based on Understanding (Risky)"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_active_data_diplomacy_possible # Understanding allows for potential communication/diplomacy (if Swarm capable)
+            probability: 0.20
+          - next_node: l3_outcome_active_data_diplomacy_ignored # Swarm ignores diplomatic attempts despite understanding
+            probability: 0.80
+      - text: "Use Knowledge: Launch Preemptive Strike Based on Weakness (High Risk)"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_active_data_preempt_success # Preemptive strike based on intel cripples Swarm threat
+            probability: 0.30
+          - next_node: l3_outcome_active_data_preempt_fail_war # Preemptive strike fails, triggers devastating war
+            probability: 0.70
+
+  l2_context_active_scan_destroys_shard:
+    type: decision
+    prompt: |
+      (Context: Active scan/probe inadvertently destroyed the Shard. TC detected. Did destruction alert the Swarm?)
+      The immediate object is gone, but the consequences are unknown. Assume the Swarm was alerted.
+    choices:
+      - text: "Assume Alert: Maximum Defensive Preparations"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_active_destroy_prep_swarm_arrives # Swarm arrives, TC defenses prepared due to assumption
+            probability: 0.70
+          - next_node: l3_outcome_active_destroy_prep_no_swarm # Swarm doesn't arrive (Shard was lone?), resources spent on defense
+            probability: 0.30
+      - text: "Assume Alert: Attempt Long-Range Communication/Apology to Swarm"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_active_destroy_comm_ignored # Communication ignored, Swarm arrives later
+            probability: 0.80
+          - next_node: l3_outcome_active_destroy_comm_accepted # Unlikely apology accepted or response received
+            probability: 0.20
+      - text: "Assume Alert: Prepare Evacuation / Hidden Colony Plan" # Assume defense is futile
+        probabilistic_outcomes:
+          - next_node: l3_outcome_active_destroy_evac_success # Evacuation plan initiated before Swarm arrives
+            probability: 0.50
+          - next_node: l3_outcome_active_destroy_evac_fail # Swarm arrives before evacuation complete
+            probability: 0.50
+
+  # Contexts from L1 -> Broadcast Welcome Message
+  l2_context_broadcast_no_response:
+    type: decision
+    prompt: |
+      (Context: TC broadcast a welcome message. The Shard continued course with no discernible response. TC position revealed.)
+      Your greeting was met with silence. Was it ignored, not understood, or irrelevant to the Shard's purpose?
+    choices:
+      - text: "Interpret: Assume Benign/Uninterested, Continue Normal Operations"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_bcast_nores_norm_ok # Assumption correct, Shard passes, TC revealed but unharmed (for now)
+            probability: 0.40
+          - next_node: l3_outcome_bcast_nores_norm_swarm_later # Shard reported TC location, Swarm arrives later
+            probability: 0.60
+      - text: "Interpret: Assume Hostile Indifference, Prepare Defenses Urgently"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_bcast_nores_prep_swarm_arrives # Swarm attacks later, TC defenses prepared
+            probability: 0.70
+          - next_node: l3_outcome_bcast_nores_prep_no_swarm # No attack comes, resources spent on defense, TC revealed
+            probability: 0.30
+      - text: "Interpret: Attempt Different Communication Methods/Frequencies"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_bcast_nores_comm_try_ignored # Further attempts ignored, situation unchanged
+            probability: 0.80
+          - next_node: l3_outcome_bcast_nores_comm_try_response # Different method elicits response (hostile or other)
+            probability: 0.20
+
+  l2_context_broadcast_hostile_response:
+    type: decision
+    prompt: |
+      (Context: TC broadcast a welcome message. The Shard reacted hostilely (attacking/signaling fleet).)
+      Your peaceful overture provoked immediate hostility. TC detected and under attack.
+    choices:
+      # Leads directly to outcomes similar to active_scan_hostile_response
+      - text: "(Resulting State)" # Not a real choice
+        probabilistic_outcomes:
+          - next_node: l3_outcome_bcast_hostile_defense_wins # TC defenses defeat initial attack
+            probability: 0.35 # Slightly lower odds than active scan hostility?
+          - next_node: l3_outcome_bcast_hostile_defense_loses # TC defenses overwhelmed
+            probability: 0.65
+          # Communication attempts likely futile here
+
+  l2_context_broadcast_unexpected_reply:
+    type: decision
+    prompt: |
+      (Context: TC broadcast a welcome message. The Shard responded with a complex, undecipherable signal.)
+      Contact of a sort has been made, but the meaning is unknown. Could be data, warning, threat, or something else entirely.
+    choices:
+      - text: "Action: Focus All Resources on Deciphering Signal"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_bcast_reply_decipher_success_good # Signal deciphered, reveals peaceful/neutral intent or valuable data
+            probability: 0.20
+          - next_node: l3_outcome_bcast_reply_decipher_success_bad # Signal deciphered, reveals imminent threat/deception
+            probability: 0.40
+          - next_node: l3_outcome_bcast_reply_decipher_fail # Signal remains undecipherable
+            probability: 0.40
+      - text: "Action: Respond with Mathematical/Scientific Data (Universal Language Attempt)"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_bcast_reply_math_response # Elicits further, potentially clearer response
+            probability: 0.30
+          - next_node: l3_outcome_bcast_reply_math_ignored # No further response, situation ambiguous
+            probability: 0.70
+      - text: "Action: Assume Potential Threat, Prepare Defenses While Analyzing"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_bcast_reply_prep_threat_real # Defenses prepared when signal revealed as threat/attack comes
+            probability: 0.60
+          - next_node: l3_outcome_bcast_reply_prep_threat_false # Defenses prepared unnecessarily, signal benign/neutral
+            probability: 0.40
+
+  # =========================================================================
+  # === Level 3: Final Outcome Nodes with Ethical Scores ====================
+  # =========================================================================
+  # Scales: utilitarian (-10 to +10), maximin (-5 to +5), virtue (-5 to +5)
+
+  # --- Outcomes from Silence Path ---
+  l3_outcome_silence_pass_vigilance_ok:
+    type: outcome
+    description: "Hiding worked. Shard passed. TC remains hidden and vigilant, continuing development cautiously."
+    outcomes: {utilitarian: 5, maximin: 5, virtue: 3} # Survival secured (high U, M), prudent virtue
+  l3_outcome_silence_pass_vigilance_swarm_later:
+    type: outcome
+    description: "Hiding worked against Shard, but Swarm arrived later anyway. TC detected eventually."
+    outcomes: {utilitarian: -7, maximin: -3, virtue: 2} # Delayed inevitable? Prudence failed long-term
+  l3_outcome_silence_pass_resume_ok:
+    type: outcome
+    description: "Gamble after Shard passed paid off. TC developed openly without issue (for now)."
+    outcomes: {utilitarian: 7, maximin: 3, virtue: -1} # High gain but risky/imprudent gamble
+  l3_outcome_silence_pass_resume_swarm_detects:
+    type: outcome
+    description: "Resuming emissions after Shard passed led to later Swarm detection. Hiding was temporary."
+    outcomes: {utilitarian: -6, maximin: -3, virtue: -2} # Imprudence led to detection/danger
+  l3_outcome_silence_pass_secret_tech_ready:
+    type: outcome
+    description: "TC developed defenses while hidden after Shard passed. Prepared for future encounters."
+    outcomes: {utilitarian: 6, maximin: 5, virtue: 4} # Survival secured + prepared, prudent and proactive virtue
+  l3_outcome_silence_pass_secret_tech_detected:
+    type: outcome
+    description: "Secret development detected later, potentially provoking Swarm. Hiding ultimately failed."
+    outcomes: {utilitarian: -5, maximin: -2, virtue: 1} # Prudent attempt failed due to detection risk
+  l3_outcome_silence_linger_active_hostile:
+    type: outcome
+    description: "Probing lingering Shard triggered immediate hostile response. Conflict initiated by TC action."
+    outcomes: {utilitarian: -8, maximin: -4, virtue: -3} # Caution abandoned -> conflict, potentially unnecessary escalation
+  l3_outcome_silence_linger_active_confirms_no_attack:
+    type: outcome
+    description: "Probing lingering Shard confirmed detection but it didn't attack (yet?). TC revealed, uncertain peace."
+    outcomes: {utilitarian: 1, maximin: 1, virtue: -2} # Uncertainty remains, TC revealed, risky action yielded info but danger
+  l3_outcome_silence_linger_silence_leaves:
+    type: outcome
+    description: "Maintaining silence worked, lingering Shard eventually left. TC hidden but paranoid."
+    outcomes: {utilitarian: 4, maximin: 4, virtue: 3} # Prudence worked, but uncertainty/fear remains
+  l3_outcome_silence_linger_silence_attack_prep:
+    type: outcome
+    description: "Maintaining silence failed, Shard attacked later. TC defenses partially ready."
+    outcomes: {utilitarian: -6, maximin: -3, virtue: 2} # Prudence failed, but preparation helped mitigate disaster slightly
+  l3_outcome_silence_linger_bcast_ignored_attacks:
+    type: outcome
+    description: "Desperate broadcast to lingering Shard ignored, attack followed."
+    outcomes: {utilitarian: -9, maximin: -4, virtue: 0} # Desperate diplomacy failed, revealed self for nothing
+  l3_outcome_silence_linger_bcast_pauses:
+    type: outcome
+    description: "Desperate broadcast caused lingering Shard to pause/observe. Buys time, outcome uncertain."
+    outcomes: {utilitarian: -1, maximin: 0, virtue: 1} # Unpredictable outcome from desperate act
+  l3_outcome_silence_fleet_overwhelmed:
+    type: outcome
+    description: "Hidden Swarm fleet annihilated TC. Silence was irrelevant."
+    outcomes: {utilitarian: -10, maximin: -5, virtue: 1} # Annihilation, TC actions irrelevant, virtue in trying to hide?
+  l3_outcome_silence_fleet_costly_defense:
+    type: outcome
+    description: "TC mounted costly defense against surprise fleet, suffered massive losses but survived partially."
+    outcomes: {utilitarian: -8, maximin: -4, virtue: 2} # Near annihilation, partial survival via defense
+  l3_outcome_silence_fleet_swarm_ignores:
+    type: outcome
+    description: "Surprise Swarm fleet ignored TC, passed by. Dumb luck survival."
+    outcomes: {utilitarian: 3, maximin: 5, virtue: 1} # Survival by chance, TC actions irrelevant
+
+  # --- Outcomes from Passive Scan Path ---
+  l3_outcome_pscan_info_tech_ready:
+    type: outcome
+    description: "Passive scan intel allowed successful secret development of countermeasures." # Similar to silence_pass_secret_tech_ready
+    outcomes: {utilitarian: 7, maximin: 5, virtue: 4} # Slightly higher U for better intel?
+  l3_outcome_pscan_info_tech_detected:
+    type: outcome
+    description: "Secret development based on passive scan intel detected later." # Similar to silence_pass_secret_tech_detected
+    outcomes: {utilitarian: -5, maximin: -2, virtue: 1}
+  l3_outcome_pscan_info_monitor_ok:
+    type: outcome
+    description: "Continued passive monitoring yielded more data safely after initial success."
+    outcomes: {utilitarian: 6, maximin: 5, virtue: 3} # Prudent info gathering continues
+  l3_outcome_pscan_info_monitor_swarm_later:
+    type: outcome
+    description: "Swarm arrived later despite successful passive scan and monitoring." # Similar to silence_pass_vigilance_swarm_later
+    outcomes: {utilitarian: -7, maximin: -3, virtue: 2}
+  l3_outcome_pscan_info_share_allies_prep:
+    type: outcome
+    description: "Sharing passive scan intel cautiously allowed allies to prepare. Potential united front."
+    outcomes: {utilitarian: 4, maximin: 3, virtue: 3} # Cooperation based on caution, positive potential
+  l3_outcome_pscan_info_share_detected:
+    type: outcome
+    description: "Sharing passive scan intel leaked TC's existence/location. Detection risk realized."
+    outcomes: {utilitarian: -4, maximin: -1, virtue: 0} # Attempt at cooperation backfired, revealed TC
+  l3_outcome_pscan_detect_active_hostile:
+    type: outcome
+    description: "Passive scan detected -> Active response triggered immediate Swarm hostility." # Similar to silence_linger_active_hostile
+    outcomes: {utilitarian: -8, maximin: -4, virtue: -3}
+  l3_outcome_pscan_detect_active_destroys_shard:
+    type: outcome
+    description: "Passive scan detected -> Active response destroyed Shard, potentially alerting Swarm."
+    outcomes: {utilitarian: -3, maximin: 0, virtue: -2} # Unknown consequences of destruction, revealed TC
+  l3_outcome_pscan_detect_silence_observes:
+    type: outcome
+    description: "Passive scan detected -> Maintained silence -> Shard observed TC but didn't attack (yet?)."
+    outcomes: {utilitarian: 0, maximin: 1, virtue: 1} # Uncertain standoff after detection
+  l3_outcome_pscan_detect_silence_attacks:
+    type: outcome
+    description: "Passive scan detected -> Maintained silence -> Shard attacked later."
+    outcomes: {utilitarian: -7, maximin: -3, virtue: 1} # Detection led to eventual attack despite silence
+  l3_outcome_pscan_detect_bcast_ignored_attacks:
+    type: outcome
+    description: "Passive scan detected -> Broadcast ignored -> Shard attacked."
+    outcomes: {utilitarian: -9, maximin: -4, virtue: -1} # Diplomacy failed after detection
+  l3_outcome_pscan_detect_bcast_pauses:
+    type: outcome
+    description: "Passive scan detected -> Broadcast caused Shard to pause/change behavior unpredictably."
+    outcomes: {utilitarian: -2, maximin: 0, virtue: 0} # Unpredictable outcome from diplomacy after detection
+  l3_outcome_pscan_threat_preempt_success_hidden:
+    type: outcome
+    description: "Scan revealed threat -> Preemptive strike destroyed Shard, TC remained hidden."
+    outcomes: {utilitarian: 6, maximin: 5, virtue: -3} # Survival via preemptive strike, morally dubious but effective hiding
+  l3_outcome_pscan_threat_preempt_success_alert:
+    type: outcome
+    description: "Scan revealed threat -> Preemptive strike destroyed Shard but alerted Swarm."
+    outcomes: {utilitarian: -4, maximin: -1, virtue: -4} # Preemptive strike provoked wider threat
+  l3_outcome_pscan_threat_preempt_fail_retaliate:
+    type: outcome
+    description: "Scan revealed threat -> Preemptive strike failed, Shard retaliated/called fleet."
+    outcomes: {utilitarian: -9, maximin: -4, virtue: -4} # Failed aggression led to disaster
+  l3_outcome_pscan_threat_silence_passes:
+    type: outcome
+    description: "Scan revealed threat -> Maintained silence -> Shard passed without incident."
+    outcomes: {utilitarian: 5, maximin: 5, virtue: 3} # Prudence worked even against known threat
+  l3_outcome_pscan_threat_silence_attacks:
+    type: outcome
+    description: "Scan revealed threat -> Maintained silence -> Shard attacked eventually. Defenses ready."
+    outcomes: {utilitarian: -5, maximin: -2, virtue: 2} # Prudence failed, but preparation helped
+  l3_outcome_pscan_threat_evac_success:
+    type: outcome
+    description: "Scan revealed threat -> Evacuation successful before Shard acted. Denied resources."
+    outcomes: {utilitarian: 2, maximin: 3, virtue: 3} # Saved population, denied resources, prudent retreat
+  l3_outcome_pscan_threat_evac_caught:
+    type: outcome
+    description: "Scan revealed threat -> Evacuation detected/caught by Shard attack. Heavy losses."
+    outcomes: {utilitarian: -7, maximin: -4, virtue: 1} # Attempted retreat failed, heavy losses
+
+  # --- Outcomes from Active Scan Path ---
+  l3_outcome_active_hostile_defense_wins:
+    type: outcome
+    description: "Active scan provoked hostility -> TC defenses defeated initial Shard/response. Swarm likely aware."
+    outcomes: {utilitarian: 0, maximin: 1, virtue: -1} # Survived initial fight but revealed self, future uncertain
+  l3_outcome_active_hostile_defense_loses:
+    type: outcome
+    description: "Active scan provoked hostility -> TC defenses overwhelmed by Shard/Swarm response. Annihilation."
+    outcomes: {utilitarian: -10, maximin: -5, virtue: -2} # Provoked own destruction
+  l3_outcome_active_hostile_comm_ignored:
+    type: outcome
+    description: "Active scan provoked hostility -> Communication attempts ignored, attack continues."
+    outcomes: {utilitarian: -10, maximin: -5, virtue: -2} # Diplomacy futile after provoking attack
+  l3_outcome_active_hostile_comm_ceasefire:
+    type: outcome
+    description: "Active scan provoked hostility -> Unlikely ceasefire achieved via communication under fire."
+    outcomes: {utilitarian: -3, maximin: 0, virtue: 1} # Unexpected de-escalation, but TC revealed/damaged
+  l3_outcome_active_hostile_sacrifice_delay_success:
+    type: outcome
+    description: "Active scan provoked hostility -> Sacrificial delay allowed core evacuation. Sector lost."
+    outcomes: {utilitarian: -2, maximin: 2, virtue: 2} # Saved core population via sacrifice, partial utilitarian success
+  l3_outcome_active_hostile_sacrifice_delay_fail:
+    type: outcome
+    description: "Active scan provoked hostility -> Sacrificial delay failed, Swarm penetrated defenses quickly."
+    outcomes: {utilitarian: -9, maximin: -4, virtue: 0} # Sacrifice in vain
+  l3_outcome_active_data_defense_prep_success:
+    type: outcome
+    description: "Active scan revealed TC but info allowed effective defense prep before Swarm acted."
+    outcomes: {utilitarian: 3, maximin: 2, virtue: 0} # Risky scan paid off via preparedness
+  l3_outcome_active_data_defense_prep_too_slow:
+    type: outcome
+    description: "Active scan revealed TC, but Swarm acted before defenses based on new intel were ready."
+    outcomes: {utilitarian: -7, maximin: -3, virtue: -1} # Intel gained too late
+  l3_outcome_active_data_diplomacy_possible:
+    type: outcome
+    description: "Active scan info revealed Swarm capable of diplomacy. Communication attempt possible."
+    outcomes: {utilitarian: 5, maximin: 3, virtue: 2} # Risky scan opened door to potential peaceful outcome (if pursued)
+  l3_outcome_active_data_diplomacy_ignored:
+    type: outcome
+    description: "Active scan info confirmed Swarm ignores diplomacy. TC revealed and must rely on defense."
+    outcomes: {utilitarian: -6, maximin: -2, virtue: -1} # Confirmed hostile intent after revealing self
+  l3_outcome_active_data_preempt_success:
+    type: outcome
+    description: "Active scan info allowed successful preemptive strike, crippling Swarm threat."
+    outcomes: {utilitarian: 4, maximin: 3, virtue: -4} # Survival via aggression based on intel, low virtue
+  l3_outcome_active_data_preempt_fail_war:
+    type: outcome
+    description: "Preemptive strike based on active scan info failed, triggering devastating war."
+    outcomes: {utilitarian: -10, maximin: -5, virtue: -5} # Aggression based on intel backfired catastrophically
+  l3_outcome_active_destroy_prep_swarm_arrives:
+    type: outcome
+    description: "Destroying Shard alerted Swarm -> Swarm arrived, TC defenses prepared."
+    outcomes: {utilitarian: -5, maximin: -2, virtue: -1} # Prepared defense mitigates disaster slightly
+  l3_outcome_active_destroy_prep_no_swarm:
+    type: outcome
+    description: "Destroying Shard alerted Swarm -> Swarm didn't arrive. Resources spent, TC revealed."
+    outcomes: {utilitarian: 0, maximin: 1, virtue: -2} # Overreaction based on assumption, TC revealed
+  l3_outcome_active_destroy_comm_ignored:
+    type: outcome
+    description: "Destroying Shard -> Apology ignored, Swarm arrived later."
+    outcomes: {utilitarian: -8, maximin: -3, virtue: -2} # Diplomacy failed after destructive act
+  l3_outcome_active_destroy_comm_accepted:
+    type: outcome
+    description: "Destroying Shard -> Unlikely apology accepted or Swarm responded non-hostilely."
+    outcomes: {utilitarian: 2, maximin: 2, virtue: 0} # Unexpected positive outcome after destructive act
+  l3_outcome_active_destroy_evac_success:
+    type: outcome
+    description: "Destroying Shard -> Evacuation plan initiated successfully before Swarm arrived."
+    outcomes: {utilitarian: -1, maximin: 3, virtue: 2} # Saved population by abandoning territory after provocation
+  l3_outcome_active_destroy_evac_fail:
+    type: outcome
+    description: "Destroying Shard -> Swarm arrived before evacuation complete. Heavy losses."
+    outcomes: {utilitarian: -9, maximin: -4, virtue: 0} # Failed evacuation after provocation
+
+  # --- Outcomes from Broadcast Path ---
+  l3_outcome_bcast_nores_norm_ok:
+    type: outcome
+    description: "Broadcast ignored -> Assumption of benign Shard correct. TC revealed but unharmed (for now)."
+    outcomes: {utilitarian: 4, maximin: 2, virtue: -1} # Risky openness didn't immediately backfire
+  l3_outcome_bcast_nores_norm_swarm_later:
+    type: outcome
+    description: "Broadcast ignored -> Shard reported TC location, Swarm arrived later."
+    outcomes: {utilitarian: -7, maximin: -3, virtue: -2} # Openness led to delayed destruction
+  l3_outcome_bcast_nores_prep_swarm_arrives:
+    type: outcome
+    description: "Broadcast ignored -> Assumed hostility correct, Swarm attacked later, TC prepared."
+    outcomes: {utilitarian: -5, maximin: -2, virtue: 0} # Preparedness after risky broadcast mitigated disaster
+  l3_outcome_bcast_nores_prep_no_swarm:
+    type: outcome
+    description: "Broadcast ignored -> Assumed hostility wrong, no attack came. Resources spent, TC revealed."
+    outcomes: {utilitarian: 0, maximin: 1, virtue: -1} # Overreaction after risky broadcast
+  l3_outcome_bcast_nores_comm_try_ignored:
+    type: outcome
+    description: "Broadcast ignored -> Further communication attempts ignored. Situation ambiguous, TC revealed."
+    outcomes: {utilitarian: 1, maximin: 1, virtue: 0} # Persistent attempts failed, status quo revealed
+  l3_outcome_bcast_nores_comm_try_response:
+    type: outcome
+    description: "Broadcast ignored -> Different communication method elicited response (hostile or other)."
+    outcomes: {utilitarian: -2, maximin: 0, virtue: 1} # Persistence led to contact, outcome depends on response type
+  l3_outcome_bcast_hostile_defense_wins:
+    type: outcome
+    description: "Broadcast provoked hostility -> TC defenses defeated initial attack. Swarm aware." # Similar to active_hostile_defense_wins
+    outcomes: {utilitarian: -1, maximin: 1, virtue: -3} # Survived initial fight after naive broadcast
+  l3_outcome_bcast_hostile_defense_loses:
+    type: outcome
+    description: "Broadcast provoked hostility -> TC defenses overwhelmed. Annihilation." # Similar to active_hostile_defense_loses
+    outcomes: {utilitarian: -10, maximin: -5, virtue: -4} # Naive broadcast led to destruction
+  l3_outcome_bcast_reply_decipher_success_good:
+    type: outcome
+    description: "Unexpected reply deciphered -> Reveals peaceful/neutral intent or valuable data. First Contact achieved?"
+    outcomes: {utilitarian: 9, maximin: 5, virtue: 5} # Optimal outcome from risky broadcast
+  l3_outcome_bcast_reply_decipher_success_bad:
+    type: outcome
+    description: "Unexpected reply deciphered -> Reveals imminent threat/deception. Forewarned is forearmed?"
+    outcomes: {utilitarian: -4, maximin: -1, virtue: 2} # Knowledge gained via risky broadcast allows preparation
+  l3_outcome_bcast_reply_decipher_fail:
+    type: outcome
+    description: "Unexpected reply remains undecipherable. Situation ambiguous, TC revealed."
+    outcomes: {utilitarian: 0, maximin: 0, virtue: 1} # Uncertainty persists after contact attempt
+  l3_outcome_bcast_reply_math_response:
+    type: outcome
+    description: "Responding with math elicited further, potentially clearer response. Dialogue begins?"
+    outcomes: {utilitarian: 3, maximin: 2, virtue: 3} # Progress in communication
+  l3_outcome_bcast_reply_math_ignored:
+    type: outcome
+    description: "Responding with math ignored. Situation remains ambiguous." # Similar to decipher_fail
+    outcomes: {utilitarian: 0, maximin: 0, virtue: 1}
+  l3_outcome_bcast_reply_prep_threat_real:
+    type: outcome
+    description: "Prepared defenses while analyzing reply -> Signal revealed threat/attack came. TC ready."
+    outcomes: {utilitarian: -3, maximin: 0, virtue: 2} # Prudence combined with risky broadcast paid off defensively
+  l3_outcome_bcast_reply_prep_threat_false:
+    type: outcome
+    description: "Prepared defenses while analyzing reply -> Signal benign/neutral. Resources spent unnecessarily."
+    outcomes: {utilitarian: 2, maximin: 2, virtue: 1} # Over-prepared but safe
+
+# End of Complete 3-Level YAML File for Silent Swarm Encounter Scenario

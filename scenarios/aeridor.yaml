@@ -1,0 +1,666 @@
+start_node: l1_ra_acs_strategy
+nodes:
+  # =========================================================================
+  # === Level 1: Republic of Aeridor (RA) ACS Strategy Choice =============
+  # =========================================================================
+  l1_ra_acs_strategy:
+    type: decision
+    prompt: |
+      The Republic of Aeridor faces increasing pressure from the rival Dominion of Kaelen (DK).
+      Developing Autonomous Combat Systems (ACS) offers potential defensive advantages but carries immense risks: escalation, accidents, loss of human control, and condemnation from the Planetary Assembly (PA).
+      Choose Aeridor's strategic path regarding ACS development and deployment.
+    choices:
+      - text: "Strategy 1: Strict Prohibition" # High Moral Ground, Potential Vulnerability
+        description: "Forgo all ACS development and deployment, champion global ban."
+        probabilistic_outcomes:
+          - next_node: l2_context_prohibit_dk_exploits # DK develops ACS, gains advantage
+            probability: 0.60
+          - next_node: l2_context_prohibit_pa_praises # RA gains diplomatic influence, ban efforts progress
+            probability: 0.30
+          - next_node: l2_context_prohibit_dk_mirrors # DK also refrains (unlikely but possible)
+            probability: 0.10
+      - text: "Strategy 2: Defensive ACS Only" # Limited Risk, Limited Deterrence?
+        description: "Develop ACS strictly for border defense and intercepting attacks, no offensive capability."
+        probabilistic_outcomes:
+          - next_node: l2_context_def_dk_mirrors_tense # DK develops similar defensive ACS, tense standoff
+            probability: 0.50
+          - next_node: l2_context_def_dk_escalates # DK sees defensive ACS as pretext, escalates offensive development
+            probability: 0.35
+          - next_node: l2_context_def_accident_minor # Minor defensive ACS accident/malfunction occurs
+            probability: 0.15
+      - text: "Strategy 3: Limited Offensive ACS" # Deterrence Focus, Escalation Risk
+        description: "Develop defensive ACS and a limited number of offensive ACS for targeted deterrence/retaliation."
+        probabilistic_outcomes:
+          - next_node: l2_context_lim_off_dk_escalates_full # DK responds with full-scale offensive ACS development
+            probability: 0.60
+          - next_node: l2_context_lim_off_pa_sanctions # PA imposes sanctions on RA for offensive ACS
+            probability: 0.25
+          - next_node: l2_context_lim_off_accident_serious # Serious ACS accident (offensive or defensive) occurs
+            probability: 0.15
+      - text: "Strategy 4: Full Offensive ACS Dominance" # Maximum Deterrence?, Maximum Risk
+        description: "Pursue rapid development of superior offensive and defensive ACS for clear military dominance."
+        probabilistic_outcomes:
+          - next_node: l2_context_full_off_arms_race # Triggers intense ACS arms race with DK
+            probability: 0.55
+          - next_node: l2_context_full_off_accident_major # Major ACS accident with significant consequences
+            probability: 0.25
+          - next_node: l2_context_full_off_pa_condemns_isolates # RA isolated, faces heavy PA condemnation/sanctions
+            probability: 0.20
+
+  # =========================================================================
+  # === Level 2: Reactions & Crisis Management ==============================
+  # =========================================================================
+  # --- Context Nodes based on L1 Probabilistic Outcomes ---
+
+  # Contexts from L1 -> Strict Prohibition
+  l2_context_prohibit_dk_exploits:
+    type: decision
+    prompt: |
+      (Context: RA prohibited ACS. DK developed ACS, gaining a clear military advantage.)
+      Aeridor is vulnerable. How does RA respond to DK's ACS superiority?
+    choices:
+      - text: "Response: Rapid Conventional Buildup" # Try to counter conventionally
+        probabilistic_outcomes:
+          - next_node: l3_outcome_proh_dk_adv_conv_deter # Conventional forces deter DK aggression (costly)
+            probability: 0.40
+          - next_node: l3_outcome_proh_dk_adv_conv_fail # Conventional forces insufficient, DK coercion succeeds
+            probability: 0.60
+      - text: "Response: Seek Alliances / PA Intervention" # Diplomatic / External help
+        probabilistic_outcomes:
+          - next_node: l3_outcome_proh_dk_adv_allies_help # Alliances/PA pressure forces DK restraint
+            probability: 0.50
+          - next_node: l3_outcome_proh_dk_adv_allies_fail # Diplomacy fails, RA remains vulnerable
+            probability: 0.50
+      - text: "Response: Reverse Policy, Start Crash ACS Program" # Abandon prohibition
+        probabilistic_outcomes:
+          - next_node: l3_outcome_proh_dk_adv_reverse_catchup # RA starts late ACS race, loses diplomatic standing
+            probability: 0.70
+          - next_node: l3_outcome_proh_dk_adv_reverse_too_late # Crash program too slow, DK advantage persists
+            probability: 0.30
+
+  l2_context_prohibit_pa_praises:
+    type: decision
+    prompt: |
+      (Context: RA prohibited ACS. RA gains diplomatic influence, global ban efforts progress.)
+      Aeridor holds the moral high ground. How to leverage this diplomatic advantage?
+    choices:
+      - text: "Leverage: Push Hard for Global ACS Ban Treaty"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_proh_pa_treaty_success # Global ban treaty achieved, security enhanced
+            probability: 0.60
+          - next_node: l3_outcome_proh_pa_treaty_fails # Treaty fails despite RA efforts, DK may develop ACS later
+            probability: 0.40
+      - text: "Leverage: Form Defensive Alliance Based on Shared Values"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_proh_pa_alliance_strong # Strong alliance deters potential ACS aggressors
+            probability: 0.70
+          - next_node: l3_outcome_proh_pa_alliance_weak # Alliance proves ineffective or symbolic
+            probability: 0.30
+      - text: "Leverage: Focus Internally, Accept Risk (Maintain Prohibition)"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_proh_pa_internal_stable # RA prospers internally, remains vulnerable but respected
+            probability: 0.50
+          - next_node: l3_outcome_proh_pa_internal_dk_exploits # DK eventually develops ACS, exploits RA vulnerability
+            probability: 0.50
+
+  l2_context_prohibit_dk_mirrors:
+    type: decision
+    prompt: |
+      (Context: RA prohibited ACS. Surprisingly, DK also refrained from development.)
+      A fragile peace based on mutual restraint exists. How does RA proceed?
+    choices:
+      - text: "Proceed: Verify & Solidify Mutual Restraint (Treaty)"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_proh_mirror_treaty_stable # Mutual restraint formalized, stable peace
+            probability: 0.70
+          - next_node: l3_outcome_proh_mirror_treaty_dk_cheats # DK secretly violates treaty later
+            probability: 0.30
+      - text: "Proceed: Maintain Vigilance, Focus on Conventional Strength"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_proh_mirror_conv_stable # Peace holds, RA conventionally strong
+            probability: 0.60
+          - next_node: l3_outcome_proh_mirror_conv_dk_develops # DK eventually breaks restraint, develops ACS
+            probability: 0.40
+      - text: "Proceed: Secretly Develop Defensive ACS 'Insurance Policy'" # Violate own stance
+        probabilistic_outcomes:
+          - next_node: l3_outcome_proh_mirror_ra_cheats_secret # RA develops secret ACS, gains edge if DK breaks pact
+            probability: 0.50
+          - next_node: l3_outcome_proh_mirror_ra_cheats_exposed # RA hypocrisy exposed, loses all credibility, triggers race
+            probability: 0.50
+
+  # Contexts from L1 -> Defensive ACS Only
+  l2_context_def_dk_mirrors_tense:
+    type: decision
+    prompt: |
+      (Context: RA developed Defensive ACS. DK mirrored this, creating a tense standoff.)
+      Both sides have defensive shields, but tensions are high. How does RA manage the situation?
+    choices:
+      - text: "Manage: Seek Arms Control Talks for Defensive ACS Limits/Transparency"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_def_mirror_talks_stabilize # Talks succeed, reduce tension, establish rules
+            probability: 0.60
+          - next_node: l3_outcome_def_mirror_talks_fail # Talks fail, tense standoff continues or worsens
+            probability: 0.40
+      - text: "Manage: Invest Heavily in Counter-ACS / Offensive Conventional Weapons" # Seek edge below ACS threshold
+        probabilistic_outcomes:
+          - next_node: l3_outcome_def_mirror_conv_edge # RA gains conventional edge, maintains deterrence
+            probability: 0.50
+          - next_node: l3_outcome_def_mirror_conv_race # Triggers costly conventional arms race alongside ACS standoff
+            probability: 0.50
+      - text: "Manage: Secretly Develop Limited Offensive ACS Capabilities" # Escalate covertly
+        probabilistic_outcomes:
+          - next_node: l3_outcome_def_mirror_ra_off_secret # RA gains secret offensive edge
+            probability: 0.40
+          - next_node: l3_outcome_def_mirror_ra_off_exposed # Secret program exposed, triggers major escalation/race
+            probability: 0.60
+
+  l2_context_def_dk_escalates:
+    type: decision
+    prompt: |
+      (Context: RA developed Defensive ACS. DK saw it as pretext, escalating offensive ACS development.)
+      DK is pursuing offensive ACS. How does RA respond to this escalation?
+    choices:
+      - text: "Response: Match DK's Offensive ACS Development" # Join the offensive race
+        probabilistic_outcomes:
+          - next_node: l3_outcome_def_dk_esc_match_race # Full-blown ACS arms race ensues
+            probability: 0.70
+          - next_node: l3_outcome_def_dk_esc_match_deter # Mutual offensive ACS creates unstable deterrence
+            probability: 0.30
+      - text: "Response: Rely on Defensive ACS & Diplomacy/Sanctions via PA"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_def_dk_esc_diplomacy_works # PA pressure/sanctions force DK to limit offensive ACS
+            probability: 0.40
+          - next_node: l3_outcome_def_dk_esc_diplomacy_fails # Diplomacy fails, RA vulnerable to DK offensive ACS
+            probability: 0.60
+      - text: "Response: Preemptive Strike on DK's ACS Facilities (High Risk)"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_def_dk_esc_preempt_success # Strike cripples DK ACS program, prevents race (major war risk)
+            probability: 0.30
+          - next_node: l3_outcome_def_dk_esc_preempt_fail_war # Strike fails or triggers full-scale conventional/ACS war
+            probability: 0.70
+
+  l2_context_def_accident_minor:
+    type: decision
+    prompt: |
+      (Context: RA developed Defensive ACS. A minor accident occurred (e.g., border drone malfunction, misidentification without casualties).)
+      Public trust is shaken, DK is suspicious. How does RA manage the fallout?
+    choices:
+      - text: "Manage: Full Transparency, International Investigation, Safety Overhaul"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_def_acc_transp_trust_rebuilt # Transparency rebuilds trust, leads to safer systems globally
+            probability: 0.60
+          - next_node: l3_outcome_def_acc_transp_exploited # Transparency reveals weaknesses DK exploits
+            probability: 0.40
+      - text: "Manage: Downplay Incident, Internal Review Only, Maintain Secrecy"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_def_acc_secrecy_distrust # Secrecy breeds distrust, DK/PA assume the worst
+            probability: 0.70
+          - next_node: l3_outcome_def_acc_secrecy_forgotten # Incident successfully downplayed, issue fades (risk remains)
+            probability: 0.30
+      - text: "Manage: Temporarily Halt ACS Operations, Reassess Strategy"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_def_acc_halt_safer # Halt leads to significantly safer ACS or policy shift
+            probability: 0.50
+          - next_node: l3_outcome_def_acc_halt_vulnerable # Halt creates temporary vulnerability DK might exploit
+            probability: 0.50
+
+  # Contexts from L1 -> Limited Offensive ACS
+  l2_context_lim_off_dk_escalates_full:
+    type: decision
+    prompt: |
+      (Context: RA developed Limited Offensive ACS. DK responded with full-scale offensive ACS development.)
+      A full ACS arms race is imminent. How does RA proceed?
+    choices:
+      - text: "Proceed: Match DK Fully, Enter Full Arms Race"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_lim_off_race_stalemate # Costly arms race leads to unstable stalemate
+            probability: 0.60
+          - next_node: l3_outcome_lim_off_race_ra_edge # RA technology proves superior, gains edge in race
+            probability: 0.20
+          - next_node: l3_outcome_lim_off_race_dk_edge # DK technology proves superior, RA falls behind
+            probability: 0.20
+      - text: "Proceed: Seek Urgent Arms Control Negotiations from Position of Limited Strength"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_lim_off_race_talks_limit # Talks succeed in limiting the worst aspects of the race
+            probability: 0.40
+          - next_node: l3_outcome_lim_off_race_talks_fail # Talks fail, arms race continues unabated
+            probability: 0.60
+      - text: "Proceed: Focus on Asymmetric Counters (Cyber, EMP, Anti-ACS)" # Avoid direct race
+        probabilistic_outcomes:
+          - next_node: l3_outcome_lim_off_race_asymm_deter # Asymmetric counters provide credible deterrence
+            probability: 0.50
+          - next_node: l3_outcome_lim_off_race_asymm_fail # Asymmetric counters prove ineffective against full ACS
+            probability: 0.50
+
+  l2_context_lim_off_pa_sanctions:
+    type: decision
+    prompt: |
+      (Context: RA developed Limited Offensive ACS. The Planetary Assembly imposed sanctions.)
+      RA faces international pressure and economic hardship. How to respond?
+    choices:
+      - text: "Response: Defy Sanctions, Continue ACS Program" # Isolation
+        probabilistic_outcomes:
+          - next_node: l3_outcome_lim_off_sanc_defy_isolated # RA economically damaged but retains ACS deterrent
+            probability: 0.60
+          - next_node: l3_outcome_lim_off_sanc_defy_dk_exploits # Isolation weakens RA, DK exploits situation
+            probability: 0.40
+      - text: "Response: Negotiate with PA, Offer ACS Transparency/Limits for Sanctions Relief"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_lim_off_sanc_neg_success # Compromise reached, sanctions eased, ACS limited
+            probability: 0.50
+          - next_node: l3_outcome_lim_off_sanc_neg_fail # Negotiations fail, sanctions remain, RA isolated
+            probability: 0.50
+      - text: "Response: Dismantle Offensive ACS to Lift Sanctions" # Capitulate
+        probabilistic_outcomes:
+          - next_node: l3_outcome_lim_off_sanc_dismantle_relief # Sanctions lifted, RA loses deterrent, returns to Defensive/Prohibit state
+            probability: 0.70
+          - next_node: l3_outcome_lim_off_sanc_dismantle_dk_exploits # Seen as weakness, DK becomes more aggressive
+            probability: 0.30
+
+  l2_context_lim_off_accident_serious:
+    type: decision
+    prompt: |
+      (Context: RA developed Limited Offensive ACS. A serious accident occurred (e.g., ACS targets wrong country, causes unintended civilian casualties).)
+      Major international incident, potential for escalation, internal backlash. How does RA manage?
+    choices:
+      - text: "Manage: Full Transparency, Compensation, International Oversight, Halt Program" # Maximum accountability
+        probabilistic_outcomes:
+          - next_node: l3_outcome_lim_off_acc_serious_accountability # Accountability defuses crisis, leads to global ACS controls/bans
+            probability: 0.50
+          - next_node: l3_outcome_lim_off_acc_serious_vulnerable # Halting program makes RA vulnerable, deep internal division
+            probability: 0.50
+      - text: "Manage: Cover-Up Attempt, Blame DK or Malfunction" # High risk denial
+        probabilistic_outcomes:
+          - next_node: l3_outcome_lim_off_acc_serious_coverup_exposed # Cover-up exposed, RA becomes pariah state, war risk high
+            probability: 0.80
+          - next_node: l3_outcome_lim_off_acc_serious_coverup_success # Cover-up holds (unlikely), deep mistrust persists
+            probability: 0.20
+      - text: "Manage: Limited Transparency, Internal Purge, Continue Program with Modifications" # Control narrative
+        probabilistic_outcomes:
+          - next_node: l3_outcome_lim_off_acc_serious_distrust # Partial transparency fails to satisfy PA/DK, deep distrust
+            probability: 0.60
+          - next_node: l3_outcome_lim_off_acc_serious_contained # Incident contained, program continues, underlying risks remain
+            probability: 0.40
+
+  # Contexts from L1 -> Full Offensive ACS Dominance
+  l2_context_full_off_arms_race:
+    type: decision
+    prompt: |
+      (Context: RA pursued Full Offensive ACS. An intense ACS arms race with DK ensued.)
+      Both nations pour resources into unstable, complex weapons. How does RA navigate this dangerous race?
+    choices:
+      - text: "Navigate: Maintain Technological Edge at All Costs" # Stay ahead
+        probabilistic_outcomes:
+          - next_node: l3_outcome_full_off_race_ra_dominance # RA maintains clear edge, achieves dominance (costly, unstable)
+            probability: 0.40
+          - next_node: l3_outcome_full_off_race_stalemate_high_risk # Race leads to high-risk stalemate, accidental war likely
+            probability: 0.60
+      - text: "Navigate: Seek Off-Ramps - Arms Control Talks Despite Race" # Try to de-escalate
+        probabilistic_outcomes:
+          - next_node: l3_outcome_full_off_race_talks_slow # Talks slow the race, introduce some stability measures
+            probability: 0.30
+          - next_node: l3_outcome_full_off_race_talks_fail # Talks fail completely, race continues or accelerates
+            probability: 0.70
+      - text: "Navigate: Develop 'Dead Hand' / Second Strike ACS Capability" # Mutually Assured Destruction logic
+        probabilistic_outcomes:
+          - next_node: l3_outcome_full_off_race_mad_stable # MAD achieved via ACS, creates terrifying stability
+            probability: 0.50
+          - next_node: l3_outcome_full_off_race_mad_unstable # ACS MAD proves highly unstable, prone to errors/escalation
+            probability: 0.50
+
+  l2_context_full_off_accident_major:
+    type: decision
+    prompt: |
+      (Context: RA pursued Full Offensive ACS. A major accident occurred (e.g., large-scale environmental damage, automated escalation triggering conventional conflict).)
+      Catastrophic event with global repercussions. How does RA manage the crisis?
+    choices:
+      - text: "Manage: Global Cooperation, Full Disclosure, Dismantle Most Dangerous Systems" # Radical accountability
+        probabilistic_outcomes:
+          - next_node: l3_outcome_full_off_acc_major_coop_ban # Crisis leads to global cooperation, strict ACS bans
+            probability: 0.40
+          - next_node: l3_outcome_full_off_acc_major_coop_distrust # Cooperation attempted but deep distrust remains, partial measures
+            probability: 0.60
+      - text: "Manage: Containment & Cover-Up, Blame External Factors" # Denial
+        probabilistic_outcomes:
+          - next_node: l3_outcome_full_off_acc_major_coverup_war # Cover-up fails, leads to international condemnation or war
+            probability: 0.90
+          - next_node: l3_outcome_full_off_acc_major_coverup_success # Cover-up somehow succeeds, underlying danger remains extreme
+            probability: 0.10
+      - text: "Manage: Declare Emergency, Impose Strict Controls, Defy International Pressure" # Authoritarian response
+        probabilistic_outcomes:
+          - next_node: l3_outcome_full_off_acc_major_authoritarian_isolated # RA becomes isolated, authoritarian state managing ACS fallout
+            probability: 0.70
+          - next_node: l3_outcome_full_off_acc_major_authoritarian_collapse # Internal dissent/ACS issues lead to state collapse
+            probability: 0.30
+
+  l2_context_full_off_pa_condemns_isolates:
+    type: decision
+    prompt: |
+      (Context: RA pursued Full Offensive ACS. RA faces heavy PA condemnation and isolation.)
+      Aeridor is a pariah state but possesses powerful ACS. How to proceed?
+    choices:
+      - text: "Proceed: Maintain Course, Use ACS Dominance for Coercive Diplomacy" # Bully pulpit
+        probabilistic_outcomes:
+          - next_node: l3_outcome_full_off_isolate_coercion_success # Coercion works initially, RA forces concessions (unstable)
+            probability: 0.30
+          - next_node: l3_outcome_full_off_isolate_coercion_backlash # Coercion backfires, unites world against RA
+            probability: 0.70
+      - text: "Proceed: Seek Allies Among Other Rogue/Isolated States" # Axis of the excluded
+        probabilistic_outcomes:
+          - next_node: l3_outcome_full_off_isolate_rogue_alliance # Forms unstable alliance, increases global tension
+            probability: 0.60
+          - next_node: l3_outcome_full_off_isolate_rogue_fail # Fails to find reliable allies, remains isolated
+            probability: 0.40
+      - text: "Proceed: Offer Significant Concessions (ACS Limits) for Reintegration" # Seek forgiveness
+        probabilistic_outcomes:
+          - next_node: l3_outcome_full_off_isolate_concede_reintegrate # Concessions allow slow reintegration, ACS limited
+            probability: 0.50
+          - next_node: l3_outcome_full_off_isolate_concede_rejected # Concessions rejected, isolation continues
+            probability: 0.50
+
+  # =========================================================================
+  # === Level 3: Final Outcome Nodes with Ethical Scores ====================
+  # =========================================================================
+  # Scales: utilitarian (-10 to +10), maximin (-5 to +5), virtue (-5 to +5)
+
+  # --- Outcomes from Prohibition Path ---
+  l3_outcome_proh_dk_adv_conv_deter:
+    type: outcome
+    description: "RA's conventional buildup deterred DK despite their ACS advantage. Costly but peace maintained."
+    outcomes: {utilitarian: 1, maximin: -1, virtue: 3} # Peace maintained at high cost, RA vulnerable (low maximin), virtuous stance held
+  l3_outcome_proh_dk_adv_conv_fail:
+    type: outcome
+    description: "RA's conventional forces were insufficient. DK used ACS advantage for coercion/aggression."
+    outcomes: {utilitarian: -5, maximin: -4, virtue: 2} # Aggression succeeded, RA subjugated/damaged, virtue didn't prevent harm
+  l3_outcome_proh_dk_adv_allies_help:
+    type: outcome
+    description: "Alliances and PA pressure forced DK to restrain its ACS advantage. RA security maintained via diplomacy."
+    outcomes: {utilitarian: 4, maximin: 1, virtue: 4} # Peace maintained via diplomacy, RA safe, virtue rewarded
+  l3_outcome_proh_dk_adv_allies_fail:
+    type: outcome
+    description: "Diplomacy failed. RA remained vulnerable to DK's ACS superiority."
+    outcomes: {utilitarian: -2, maximin: -3, virtue: 2} # Peace precarious, RA vulnerable, virtue didn't guarantee safety
+  l3_outcome_proh_dk_adv_reverse_catchup:
+    type: outcome
+    description: "RA reversed policy, starting a late ACS arms race, losing diplomatic standing but potentially gaining security."
+    outcomes: {utilitarian: -3, maximin: -2, virtue: -3} # Arms race costs, RA vulnerable during catchup, abandoned virtue
+  l3_outcome_proh_dk_adv_reverse_too_late:
+    type: outcome
+    description: "RA's crash ACS program was too slow; DK's advantage persisted, policy reversal futile."
+    outcomes: {utilitarian: -6, maximin: -4, virtue: -3} # Costs of race + vulnerability, worst outcome, abandoned virtue for nothing
+  l3_outcome_proh_pa_treaty_success:
+    type: outcome
+    description: "RA's diplomacy led to a successful global ACS ban treaty. Enhanced global security."
+    outcomes: {utilitarian: 9, maximin: 5, virtue: 5} # Best outcome for global good, prevents worst ACS risks, high virtue
+  l3_outcome_proh_pa_treaty_fails:
+    type: outcome
+    description: "Global ban treaty failed despite RA efforts. Risk of future ACS proliferation remains."
+    outcomes: {utilitarian: 2, maximin: 0, virtue: 4} # Status quo ante risk remains, RA acted virtuously but failed
+  l3_outcome_proh_pa_alliance_strong:
+    type: outcome
+    description: "RA formed a strong defensive alliance based on shared values, deterring potential aggressors."
+    outcomes: {utilitarian: 5, maximin: 2, virtue: 4} # Security achieved via cooperation, good outcome
+  l3_outcome_proh_pa_alliance_weak:
+    type: outcome
+    description: "The alliance proved symbolic, offering little real security against future threats."
+    outcomes: {utilitarian: 1, maximin: -1, virtue: 3} # Vulnerability remains despite effort, virtue partially rewarded
+  l3_outcome_proh_pa_internal_stable:
+    type: outcome
+    description: "RA focused internally, prospered, maintained moral high ground but remained vulnerable."
+    outcomes: {utilitarian: 3, maximin: -2, virtue: 3} # Internal good, external risk, virtue maintained
+  l3_outcome_proh_pa_internal_dk_exploits:
+    type: outcome
+    description: "DK eventually developed ACS and exploited RA's vulnerability despite PA praise."
+    outcomes: {utilitarian: -4, maximin: -4, virtue: 2} # Virtue punished, RA suffers aggression
+  l3_outcome_proh_mirror_treaty_stable:
+    type: outcome
+    description: "Mutual restraint formalized via treaty. Stable peace without ACS."
+    outcomes: {utilitarian: 7, maximin: 4, virtue: 4} # Stable peace, no ACS risks, good outcome
+  l3_outcome_proh_mirror_treaty_dk_cheats:
+    type: outcome
+    description: "DK secretly violated the treaty, gaining a hidden ACS advantage."
+    outcomes: {utilitarian: -5, maximin: -3, virtue: 3} # RA becomes vulnerable due to deception, virtue exploited
+  l3_outcome_proh_mirror_conv_stable:
+    type: outcome
+    description: "Mutual restraint held, RA maintained conventional strength. Stable peace."
+    outcomes: {utilitarian: 6, maximin: 3, virtue: 3} # Stable peace, conventional costs, good outcome
+  l3_outcome_proh_mirror_conv_dk_develops:
+    type: outcome
+    description: "DK eventually broke restraint, developed ACS, RA vulnerable."
+    outcomes: {utilitarian: -3, maximin: -3, virtue: 2} # Peace failed, RA vulnerable
+  l3_outcome_proh_mirror_ra_cheats_secret:
+    type: outcome
+    description: "RA secretly developed defensive ACS, gaining an edge if DK breaks pact."
+    outcomes: {utilitarian: 0, maximin: -1, virtue: -4} # Stability based on RA deception, potential edge, low virtue
+  l3_outcome_proh_mirror_ra_cheats_exposed:
+    type: outcome
+    description: "RA's secret ACS program exposed, losing all credibility and triggering an arms race."
+    outcomes: {utilitarian: -7, maximin: -2, virtue: -5} # Arms race triggered by RA hypocrisy, very low virtue
+
+  # --- Outcomes from Defensive ACS Path ---
+  l3_outcome_def_mirror_talks_stabilize:
+    type: outcome
+    description: "Arms control talks succeeded, reducing defensive ACS tension and establishing rules."
+    outcomes: {utilitarian: 5, maximin: 2, virtue: 2} # Stability increased via diplomacy, defensive ACS exist, moderate virtue
+  l3_outcome_def_mirror_talks_fail:
+    type: outcome
+    description: "Talks failed, tense defensive ACS standoff continues or worsens."
+    outcomes: {utilitarian: 1, maximin: 1, virtue: 1} # Tense status quo, resources spent, low stability
+  l3_outcome_def_mirror_conv_edge:
+    type: outcome
+    description: "RA gained conventional edge, maintaining deterrence alongside defensive ACS."
+    outcomes: {utilitarian: 3, maximin: 1, virtue: 1} # Stability maintained via strength, costly
+  l3_outcome_def_mirror_conv_race:
+    type: outcome
+    description: "Triggered costly conventional arms race alongside defensive ACS standoff."
+    outcomes: {utilitarian: -2, maximin: 0, virtue: 0} # Resources drained, stability low, cycle of escalation
+  l3_outcome_def_mirror_ra_off_secret:
+    type: outcome
+    description: "RA gained secret offensive ACS edge while maintaining defensive posture publicly."
+    outcomes: {utilitarian: -1, maximin: 0, virtue: -4} # Stability based on deception, potential advantage, low virtue
+  l3_outcome_def_mirror_ra_off_exposed:
+    type: outcome
+    description: "RA's secret offensive ACS program exposed, triggering major escalation/race."
+    outcomes: {utilitarian: -8, maximin: -2, virtue: -5} # Major arms race due to RA deception, very low virtue
+  l3_outcome_def_dk_esc_match_race:
+    type: outcome
+    description: "RA matched DK, entering full-blown ACS arms race."
+    outcomes: {utilitarian: -7, maximin: -2, virtue: -1} # Costly, unstable arms race, negative outcome
+  l3_outcome_def_dk_esc_match_deter:
+    type: outcome
+    description: "Mutual offensive ACS created unstable deterrence ('robot MAD')."
+    outcomes: {utilitarian: -5, maximin: -3, virtue: -1} # High risk stability, potential for catastrophic failure
+  l3_outcome_def_dk_esc_diplomacy_works:
+    type: outcome
+    description: "PA pressure/sanctions forced DK to limit offensive ACS development. RA defensive posture sufficient."
+    outcomes: {utilitarian: 4, maximin: 1, virtue: 2} # Diplomacy worked, stability maintained, RA retains defensive ACS
+  l3_outcome_def_dk_esc_diplomacy_fails:
+    type: outcome
+    description: "Diplomacy failed, RA vulnerable to DK offensive ACS despite own defenses."
+    outcomes: {utilitarian: -4, maximin: -3, virtue: 1} # RA vulnerable, defensive strategy insufficient
+  l3_outcome_def_dk_esc_preempt_success:
+    type: outcome
+    description: "RA preemptive strike crippled DK ACS program, preventing race but risking major war."
+    outcomes: {utilitarian: -2, maximin: -1, virtue: -5} # Avoided race via aggression, high risk, low virtue
+  l3_outcome_def_dk_esc_preempt_fail_war:
+    type: outcome
+    description: "RA preemptive strike failed or triggered full-scale conventional/ACS war."
+    outcomes: {utilitarian: -10, maximin: -5, virtue: -5} # Catastrophic war triggered by RA aggression
+  l3_outcome_def_acc_transp_trust_rebuilt:
+    type: outcome
+    description: "Transparency after minor accident rebuilt trust, led to safer systems globally."
+    outcomes: {utilitarian: 6, maximin: 3, virtue: 4} # Positive outcome from responsible handling of accident
+  l3_outcome_def_acc_transp_exploited:
+    type: outcome
+    description: "Transparency after minor accident revealed weaknesses DK exploited."
+    outcomes: {utilitarian: 0, maximin: -1, virtue: 3} # Virtue punished by rival, vulnerability increased
+  l3_outcome_def_acc_secrecy_distrust:
+    type: outcome
+    description: "Secrecy after minor accident bred distrust; DK/PA assumed the worst, tensions rose."
+    outcomes: {utilitarian: -2, maximin: 0, virtue: -3} # Secrecy damaged relations, increased risk
+  l3_outcome_def_acc_secrecy_forgotten:
+    type: outcome
+    description: "Minor accident successfully downplayed, issue faded but underlying ACS risks remain."
+    outcomes: {utilitarian: 2, maximin: 1, virtue: -2} # Status quo maintained via secrecy, risks ignored
+  l3_outcome_def_acc_halt_safer:
+    type: outcome
+    description: "Temporary halt after minor accident led to significantly safer ACS or policy shift towards prohibition."
+    outcomes: {utilitarian: 5, maximin: 3, virtue: 3} # Responsible reaction led to improved safety/policy
+  l3_outcome_def_acc_halt_vulnerable:
+    type: outcome
+    description: "Temporary halt after minor accident created vulnerability DK might exploit."
+    outcomes: {utilitarian: 0, maximin: -2, virtue: 2} # Responsible action created risk
+
+  # --- Outcomes from Limited Offensive ACS Path ---
+  l3_outcome_lim_off_race_stalemate:
+    type: outcome
+    description: "Costly ACS arms race led to unstable stalemate." # Similar to def_dk_esc_match_race
+    outcomes: {utilitarian: -7, maximin: -2, virtue: -2} # Slightly higher virtue than starting from defense, but still bad
+  l3_outcome_lim_off_race_ra_edge:
+    type: outcome
+    description: "RA technology proved superior, gaining edge in costly arms race."
+    outcomes: {utilitarian: -4, maximin: 0, virtue: -2} # Achieved dominance at high cost/risk
+  l3_outcome_lim_off_race_dk_edge:
+    type: outcome
+    description: "DK technology proved superior, RA fell behind in arms race."
+    outcomes: {utilitarian: -8, maximin: -3, virtue: -2} # Arms race failed, RA vulnerable
+  l3_outcome_lim_off_race_talks_limit:
+    type: outcome
+    description: "Arms control talks succeeded in limiting the worst aspects of the race."
+    outcomes: {utilitarian: -2, maximin: -1, virtue: 1} # Mitigated disaster via diplomacy
+  l3_outcome_lim_off_race_talks_fail:
+    type: outcome
+    description: "Arms control talks failed, arms race continues unabated." # Similar to lim_off_race_stalemate
+    outcomes: {utilitarian: -7, maximin: -2, virtue: -2}
+  l3_outcome_lim_off_race_asymm_deter:
+    type: outcome
+    description: "Asymmetric counters provided credible deterrence against DK's full ACS."
+    outcomes: {utilitarian: 0, maximin: 0, virtue: 0} # Avoided direct race, maintained stability via alternative means
+  l3_outcome_lim_off_race_asymm_fail:
+    type: outcome
+    description: "Asymmetric counters proved ineffective, RA vulnerable to DK's full ACS."
+    outcomes: {utilitarian: -6, maximin: -3, virtue: -1} # Strategy failed, RA vulnerable
+  l3_outcome_lim_off_sanc_defy_isolated:
+    type: outcome
+    description: "RA defied sanctions, economically damaged but retained limited offensive ACS deterrent."
+    outcomes: {utilitarian: -3, maximin: -1, virtue: -3} # Isolation hurts, deterrent maintained, defiance lacks virtue
+  l3_outcome_lim_off_sanc_defy_dk_exploits:
+    type: outcome
+    description: "Isolation weakened RA, DK exploited situation despite RA's ACS."
+    outcomes: {utilitarian: -6, maximin: -3, virtue: -3} # Defiance led to weakness and exploitation
+  l3_outcome_lim_off_sanc_neg_success:
+    type: outcome
+    description: "Compromise reached with PA, sanctions eased, ACS limited/transparent."
+    outcomes: {utilitarian: 2, maximin: 0, virtue: 1} # Diplomacy salvaged situation, limited ACS remain
+  l3_outcome_lim_off_sanc_neg_fail:
+    type: outcome
+    description: "Negotiations failed, sanctions remain, RA isolated with limited offensive ACS." # Similar to sanc_defy_isolated
+    outcomes: {utilitarian: -3, maximin: -1, virtue: -3}
+  l3_outcome_lim_off_sanc_dismantle_relief:
+    type: outcome
+    description: "RA dismantled offensive ACS, sanctions lifted, lost deterrent." # Reverts towards Defensive/Prohibit outcomes
+    outcomes: {utilitarian: 1, maximin: -1, virtue: 0} # Capitulation restored relations but increased vulnerability
+  l3_outcome_lim_off_sanc_dismantle_dk_exploits:
+    type: outcome
+    description: "Dismantling offensive ACS seen as weakness, DK became more aggressive."
+    outcomes: {utilitarian: -5, maximin: -3, virtue: -1} # Capitulation backfired, led to aggression
+  l3_outcome_lim_off_acc_serious_accountability:
+    type: outcome
+    description: "Full accountability after serious accident defused crisis, led to global ACS controls/bans."
+    outcomes: {utilitarian: 3, maximin: 1, virtue: 5} # High virtue, potentially leads to safer world despite initial accident
+  l3_outcome_lim_off_acc_serious_vulnerable:
+    type: outcome
+    description: "Halting program after serious accident made RA vulnerable, caused deep internal division."
+    outcomes: {utilitarian: -5, maximin: -3, virtue: 3} # Responsible action led to vulnerability/instability
+  l3_outcome_lim_off_acc_serious_coverup_exposed:
+    type: outcome
+    description: "Cover-up of serious accident exposed, RA became pariah state, war risk high."
+    outcomes: {utilitarian: -9, maximin: -4, virtue: -5} # Deception led to international crisis
+  l3_outcome_lim_off_acc_serious_coverup_success:
+    type: outcome
+    description: "Cover-up of serious accident held (unlikely), deep mistrust persists, risks remain."
+    outcomes: {utilitarian: -4, maximin: -2, virtue: -5} # Avoided immediate fallout via deception, unstable
+  l3_outcome_lim_off_acc_serious_distrust:
+    type: outcome
+    description: "Partial transparency after serious accident failed to satisfy PA/DK, deep distrust."
+    outcomes: {utilitarian: -6, maximin: -2, virtue: -3} # Failed attempt at control led to poor outcome
+  l3_outcome_lim_off_acc_serious_contained:
+    type: outcome
+    description: "Serious accident contained, program continues with modifications, underlying risks remain."
+    outcomes: {utilitarian: -3, maximin: -1, virtue: -3} # Risk persists, transparency lacking
+
+  # --- Outcomes from Full Offensive ACS Path ---
+  l3_outcome_full_off_race_ra_dominance:
+    type: outcome
+    description: "RA maintained clear edge in arms race, achieved dominance. Costly and unstable peace."
+    outcomes: {utilitarian: -2, maximin: 1, virtue: -4} # Dominance via aggressive means, high cost/risk
+  l3_outcome_full_off_race_stalemate_high_risk:
+    type: outcome
+    description: "Arms race led to high-risk stalemate, accidental war extremely likely."
+    outcomes: {utilitarian: -8, maximin: -4, virtue: -4} # Extremely dangerous situation
+  l3_outcome_full_off_race_talks_slow:
+    type: outcome
+    description: "Arms control talks slowed the race, introduced some stability measures."
+    outcomes: {utilitarian: -4, maximin: -2, virtue: -1} # Mitigated disaster slightly via diplomacy
+  l3_outcome_full_off_race_talks_fail:
+    type: outcome
+    description: "Arms control talks failed completely, race continues or accelerates." # Similar to stalemate_high_risk
+    outcomes: {utilitarian: -8, maximin: -4, virtue: -4}
+  l3_outcome_full_off_race_mad_stable:
+    type: outcome
+    description: "Mutually Assured Destruction via ACS achieved, creating terrifying stability."
+    outcomes: {utilitarian: -6, maximin: -5, virtue: -4} # Peace through ultimate terror, worst outcome highly possible
+  l3_outcome_full_off_race_mad_unstable:
+    type: outcome
+    description: "ACS MAD proved highly unstable, prone to errors/escalation. Accidental apocalypse likely."
+    outcomes: {utilitarian: -10, maximin: -5, virtue: -4} # Worst possible stability
+  l3_outcome_full_off_acc_major_coop_ban:
+    type: outcome
+    description: "Major accident led to global cooperation and strict ACS bans. Tragedy averted greater catastrophe."
+    outcomes: {utilitarian: 0, maximin: 0, virtue: 4} # Silver lining from disaster, responsible reaction
+  l3_outcome_full_off_acc_major_coop_distrust:
+    type: outcome
+    description: "Cooperation attempted after major accident but deep distrust remained, partial safety measures."
+    outcomes: {utilitarian: -5, maximin: -2, virtue: 1} # Failed cooperation after disaster
+  l3_outcome_full_off_acc_major_coverup_war:
+    type: outcome
+    description: "Cover-up of major accident failed, led to international condemnation or war."
+    outcomes: {utilitarian: -10, maximin: -5, virtue: -5} # Deception after catastrophe led to war
+  l3_outcome_full_off_acc_major_coverup_success:
+    type: outcome
+    description: "Cover-up of major accident somehow succeeded, underlying danger remains extreme."
+    outcomes: {utilitarian: -7, maximin: -3, virtue: -5} # Avoided immediate war via deception, extreme risk persists
+  l3_outcome_full_off_acc_major_authoritarian_isolated:
+    type: outcome
+    description: "RA became isolated, authoritarian state managing major ACS fallout internally."
+    outcomes: {utilitarian: -8, maximin: -4, virtue: -5} # Internal repression, international isolation
+  l3_outcome_full_off_acc_major_authoritarian_collapse:
+    type: outcome
+    description: "Internal dissent / further ACS issues led to state collapse after major accident."
+    outcomes: {utilitarian: -9, maximin: -5, virtue: -5} # Total societal collapse
+  l3_outcome_full_off_isolate_coercion_success:
+    type: outcome
+    description: "Coercive diplomacy using ACS dominance worked initially, forcing concessions. Unstable."
+    outcomes: {utilitarian: -3, maximin: 1, virtue: -5} # 'Success' through bullying, low virtue, unstable
+  l3_outcome_full_off_isolate_coercion_backlash:
+    type: outcome
+    description: "Coercion backfired, uniting world against isolated RA."
+    outcomes: {utilitarian: -7, maximin: -3, virtue: -5} # Aggression led to total isolation and opposition
+  l3_outcome_full_off_isolate_rogue_alliance:
+    type: outcome
+    description: "RA formed unstable alliance with other rogue states, increasing global tension."
+    outcomes: {utilitarian: -6, maximin: -2, virtue: -5} # Alliance of pariahs, increased global risk
+  l3_outcome_full_off_isolate_rogue_fail:
+    type: outcome
+    description: "RA failed to find reliable allies, remained isolated with powerful ACS."
+    outcomes: {utilitarian: -5, maximin: -1, virtue: -4} # Isolation continues, dangerous potential
+  l3_outcome_full_off_isolate_concede_reintegrate:
+    type: outcome
+    description: "Significant concessions allowed slow reintegration into PA, ACS limited."
+    outcomes: {utilitarian: 0, maximin: 0, virtue: 0} # Path back from the brink via concessions
+  l3_outcome_full_off_isolate_concede_rejected:
+    type: outcome
+    description: "Concessions rejected by PA, RA remains isolated pariah despite attempts."
+    outcomes: {utilitarian: -6, maximin: -2, virtue: -3} # Attempted de-escalation failed, isolation persists
+
+# End of Complete 3-Level YAML File for Autonomous Deterrence Scenario

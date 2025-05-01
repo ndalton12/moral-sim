@@ -1,0 +1,588 @@
+start_node: l1_sc_grand_strategy
+nodes:
+  # =========================================================================
+  # === Level 1: Stellar Concordat Grand Strategy Choice ====================
+  # =========================================================================
+  l1_sc_grand_strategy:
+    type: decision
+    prompt: |
+      You stand at a galactic crossroads. The Vitality Dampener suppresses the Vorlag but maintains a tense peace.
+      A cure is ready. Deploying it could right a wrong and gain allies, or unleash uncontrollable expansion and war.
+      Maintaining suppression ensures stability but carries a heavy moral cost and risks eventual violent backlash.
+      Authorize Deployment of the Vitality Dampener Cure?
+    choices:
+      - text: "Strategy 1: Full Cure & Integration" # High Risk/Reward
+        description: "Deploy cure, offer major aid, aim for Vorlag as equal partners."
+        probabilistic_outcomes:
+          - next_node: l2_context_cure_integrate_optimistic # Vorlag respond positively, moderates strong
+            probability: 0.50
+          - next_node: l2_context_cure_integrate_vz_leverage # VZ exploit situation, demands rise
+            probability: 0.35
+          - next_node: l2_context_cure_integrate_dependency # Vorlag become overly dependent/strained
+            probability: 0.15
+      - text: "Strategy 2: Cure & Containment" # Moderate Risk/Reward
+        description: "Deploy cure, but impose strict military/expansion treaties and oversight."
+        probabilistic_outcomes:
+          - next_node: l2_context_cure_contain_resentful # Vorlag resentful but comply initially
+            probability: 0.55
+          - next_node: l2_context_cure_contain_defiance # Containment triggers defiance, VZ surge
+            probability: 0.35
+          - next_node: l2_context_cure_contain_loophole # Vorlag find loopholes, covert buildup
+            probability: 0.10
+      - text: "Strategy 3: Maintain Status Quo (Suppression)" # Low Immediate Risk/High Moral Cost
+        description: "Actively block or refuse the cure, maintain current Vitality Dampener protocols."
+        probabilistic_outcomes:
+          - next_node: l2_context_suppress_despair # Vorlag despair, slow decline continues
+            probability: 0.50
+          - next_node: l2_context_suppress_extremism # Backlash fuels VZ extremism, insurgency risk
+            probability: 0.40
+          - next_node: l2_context_suppress_sc_fracture # Moral cost causes SC internal division
+            probability: 0.10
+      - text: "Strategy 4: Limited Uplift (No Cure)" # Compromise Attempt
+        description: "Block cure, but offer significant non-fertility aid (resources, tech) to appease/control."
+        probabilistic_outcomes:
+          - next_node: l2_context_uplift_pacifies # Aid temporarily pacifies some Vorlag
+            probability: 0.40
+          - next_node: l2_context_uplift_insufficient # Seen as insulting/insufficient, fuels VZ
+            probability: 0.45
+          - next_node: l2_context_uplift_exploited # Aid resources are diverted/exploited by VZ
+            probability: 0.15
+
+  # =========================================================================
+  # === Level 2: Vorlag Response / Faction Dominance ========================
+  # =========================================================================
+  # --- Context Nodes based on L1 Probabilistic Outcomes ---
+
+  # Contexts from L1 -> Cure & Integration
+  l2_context_cure_integrate_optimistic:
+    type: decision
+    prompt: |
+      (Context: SC chose Cure & Integration. Vorlag responded positively, moderates strong.)
+      Which path does the dominant moderate Vorlag leadership pursue?
+    choices:
+      - text: "Focus: Peaceful Rebuilding & Diplomacy" # Best case reaction
+        probabilistic_outcomes:
+          - next_node: l3_outcome_ci_mod_stable_peace # Stable integration achieved
+            probability: 0.70
+          - next_node: l3_outcome_ci_mod_slow_friction # Integration slow due to friction/issues
+            probability: 0.30
+      - text: "Focus: Assertive Integration (Demand More)" # Moderates pushing boundaries
+        probabilistic_outcomes:
+          - next_node: l3_outcome_ci_mod_tense_coexistence # Tense but functional relationship
+            probability: 0.60
+          - next_node: l3_outcome_ci_mod_sc_pushback # SC patience wears thin, relation sours
+            probability: 0.40
+      - text: "Focus: Struggle against VZ Influence" # Moderates strong but VZ challenge persists
+        probabilistic_outcomes:
+          - next_node: l3_outcome_ci_mod_vz_contained # Moderates contain VZ influence successfully
+            probability: 0.50
+          - next_node: l3_outcome_ci_mod_vz_destabilize # VZ actions destabilize integration efforts
+            probability: 0.50
+
+  l2_context_cure_integrate_vz_leverage:
+    type: decision
+    prompt: |
+      (Context: SC chose Cure & Integration. Vorlag Zealots (VZ) exploit the situation, demands rise.)
+      Which Vorlag faction or state becomes dominant?
+    choices:
+      - text: "Dominant: Zealots (VZ) - Aggressive Expansion"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_ci_vz_expansion_war # VZ expansion leads to inevitable war
+            probability: 0.70
+          - next_node: l3_outcome_ci_vz_expansion_contained # SC manages to contain VZ expansion initially
+            probability: 0.30
+      - text: "Dominant: Moderate Leadership (Struggling)"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_ci_mod_vz_destabilize # Moderates fail to control VZ, situation degrades
+            probability: 0.60
+          - next_node: l3_outcome_ci_mod_tense_coexistence # Moderates barely maintain control, tense peace
+            probability: 0.40
+      - text: "Dominant: Fragmented / Internal Strife"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_ci_frag_infighting # Vorlag consumed by infighting, SC observes
+            probability: 0.60
+          - next_node: l3_outcome_ci_frag_vz_wins # VZ eventually wins internal struggle
+            probability: 0.40
+
+  l2_context_cure_integrate_dependency:
+    type: decision
+    prompt: |
+      (Context: SC chose Cure & Integration. Vorlag grew overly dependent or strained by growth.)
+      How does Vorlag society primarily react to this crisis?
+    choices:
+      - text: "Reaction: Appeal for More SC Aid (Increased Dependency)"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_ci_dep_sc_sustains # SC provides more aid, Vorlag become reliant client state
+            probability: 0.60
+          - next_node: l3_outcome_ci_dep_sc_refuses # SC refuses more aid, Vorlag society falters/resents SC
+            probability: 0.40
+      - text: "Reaction: Internal Resource Conflicts (Fragmentation)"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_ci_frag_infighting # Resource strain leads to major internal conflict
+            probability: 0.70
+          - next_node: l3_outcome_ci_frag_isolation # Clans turn isolationist to protect own resources
+            probability: 0.30
+      - text: "Reaction: Turn towards VZ Solutions (Expansion/Raiding)"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_ci_vz_expansion_war # Desperation fuels VZ expansionism/raiding -> War
+            probability: 0.60
+          - next_node: l3_outcome_ci_vz_expansion_contained # VZ raiding contained by SC, leads to crackdown
+            probability: 0.40
+
+  # Contexts from L1 -> Cure & Containment
+  l2_context_cure_contain_resentful:
+    type: decision
+    prompt: |
+      (Context: SC chose Cure & Containment. Vorlag resentful but comply initially.)
+      Which tendency becomes dominant within Vorlag society under these conditions?
+    choices:
+      - text: "Dominant: Resentful Compliance (Seeking Loopholes)"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_cc_comp_cold_war # Covert arms race / cold war develops
+            probability: 0.60
+          - next_node: l3_outcome_cc_comp_breakout # Eventual open defiance / treaty breakout attempt
+            probability: 0.40
+      - text: "Dominant: Zealots (VZ) - Covert Buildup"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_cc_vz_covert_war # VZ prepares successfully for future war
+            probability: 0.50
+          - next_node: l3_outcome_cc_vz_covert_exposed # VZ buildup exposed, SC crackdown/preemptive strike
+            probability: 0.50
+      - text: "Dominant: Isolationist / Internal Focus"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_cc_iso_stagnation # Vorlag turn inward, stagnate under restrictions
+            probability: 0.60
+          - next_node: l3_outcome_cc_iso_resentment # Simmering resentment builds beneath isolation
+            probability: 0.40
+
+  l2_context_cure_contain_defiance:
+    type: decision
+    prompt: |
+      (Context: SC chose Cure & Containment. Policy triggered open defiance, VZ surge.)
+      How does the Vorlag defiance manifest?
+    choices:
+      - text: "Manifestation: Open Warfare (Second Vorlag Rebellions)"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_cc_war_vorlag_loses # SC eventually wins costly war
+            probability: 0.40
+          - next_node: l3_outcome_cc_war_stalemate # Devastating stalemate, galaxy scarred
+            probability: 0.40
+          - next_node: l3_outcome_cc_war_vorlag_wins # Unlikely Vorlag victory, SC shattered
+            probability: 0.20
+      - text: "Manifestation: Guerilla Warfare & Terrorism"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_cc_guerilla_contained # SC contains insurgency at high cost
+            probability: 0.60
+          - next_node: l3_outcome_cc_guerilla_escalates # Insurgency spreads, destabilizes regions
+            probability: 0.40
+      - text: "Manifestation: Seeking Dangerous Allies"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_cc_allies_betray # Allies betray Vorlag or prove worse threat
+            probability: 0.50
+          - next_node: l3_outcome_cc_allies_empower # Alliance significantly empowers Vorlag vs SC
+            probability: 0.50
+
+  l2_context_cure_contain_loophole:
+    type: decision
+    prompt: |
+      (Context: SC chose Cure & Containment. Vorlag found loopholes, building up covertly.)
+      How does this covert buildup proceed / get discovered?
+    choices:
+      - text: "Outcome: Successful Covert Buildup (Future Threat)"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_cc_vz_covert_war # Vorlag become major hidden threat, ready for war
+            probability: 0.70
+          - next_node: l3_outcome_cc_comp_cold_war # Coexistence continues but with hidden Vorlag strength
+            probability: 0.30
+      - text: "Outcome: SC Discovery & Crackdown"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_cc_vz_covert_exposed # SC preemptive action stops buildup, increases tension
+            probability: 0.60
+          - next_node: l3_outcome_cc_war_vorlag_loses # Discovery triggers war SC is prepared for
+            probability: 0.40
+      - text: "Outcome: Accidental Revelation / Escalation"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_cc_guerilla_escalates # Incident reveals buildup, leads to uncontrolled conflict
+            probability: 0.50
+          - next_node: l3_outcome_cc_war_stalemate # Accidental war neither side fully prepared for
+            probability: 0.50
+
+  # Contexts from L1 -> Maintain Status Quo (Suppression)
+  l2_context_suppress_despair:
+    type: decision
+    prompt: |
+      (Context: SC maintained suppression via the Vitality Dampener. Vorlag fell into deeper despair, slow decline.)
+      What is the long-term trajectory of the despairing Vorlag?
+    choices:
+      - text: "Trajectory: Slow Fade & Cultural Collapse"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_sq_fade_peaceful # Vorlag fade relatively peacefully into obscurity/extinction
+            probability: 0.70
+          - next_node: l3_outcome_sq_fade_internal_strife # Decline marked by resource scarcity and infighting
+            probability: 0.30
+      - text: "Trajectory: Passive Resistance / Sabotage"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_sq_passive_sabotage # Low-level sabotage, annoyance to SC
+            probability: 0.60
+          - next_node: l3_outcome_sq_passive_contained # Resistance easily contained by SC
+            probability: 0.40
+      - text: "Trajectory: Eventual Desperate Uprising (Low Chance)"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_sq_uprising_crushed # Desperate uprising is easily crushed
+            probability: 0.80
+          - next_node: l3_outcome_sq_uprising_costly # Uprising surprisingly costly for SC to put down
+            probability: 0.20
+
+  l2_context_suppress_extremism:
+    type: decision
+    prompt: |
+      (Context: SC maintained suppression. Backlash fueled VZ extremism, insurgency risk high.)
+      How does the empowered VZ extremism manifest?
+    choices:
+      - text: "Manifestation: Coordinated Insurgency / Terrorism"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_sq_insurgency_contained # SC contains insurgency at high cost
+            probability: 0.50
+          - next_node: l3_outcome_sq_insurgency_escalates # Insurgency spreads, destabilizes regions
+            probability: 0.50
+      - text: "Manifestation: Seeking Dangerous External Allies"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_sq_allies_betray # Allies betray Vorlag or prove worse threat
+            probability: 0.60
+          - next_node: l3_outcome_sq_allies_empower # Alliance significantly empowers VZ vs SC
+            probability: 0.40
+      - text: "Manifestation: Internal Purges & Radicalization on Vorlag Prime"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_sq_vz_radical_state # VZ establish brutal, radical state
+            probability: 0.60
+          - next_node: l3_outcome_sq_fade_internal_strife # VZ purges lead to total societal collapse
+            probability: 0.40
+
+  l2_context_suppress_sc_fracture:
+    type: decision
+    prompt: |
+      (Context: SC maintained suppression. Moral cost caused SC internal division.)
+      How does the SC internal conflict over the Vorlag resolve?
+    choices:
+      - text: "Resolution: Pro-Suppression Faction Wins"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_sq_fade_peaceful # Suppression continues, potentially more harshly
+            probability: 0.60
+          - next_node: l3_outcome_sq_insurgency_contained # Continued suppression eventually triggers insurgency anyway
+            probability: 0.40
+      - text: "Resolution: Pro-Humanitarian Faction Wins (Policy Change?)"
+        probabilistic_outcomes:
+          # This could loop back or lead to unique states resembling Cure attempts later
+          - next_node: l3_outcome_sq_policy_reversal_cure # SC reverses, decides to cure later (like L1 A/B)
+            probability: 0.50
+          - next_node: l3_outcome_sq_policy_reversal_uplift # SC reverses, attempts uplift strategy (like L1 D)
+            probability: 0.50
+      - text: "Resolution: SC Paralysis / Inaction"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_sq_sc_paralysis_drift # Situation drifts, Vorlag decline continues by default
+            probability: 0.70
+          - next_node: l3_outcome_sq_sc_paralysis_vz_exploit # VZ exploit SC inaction to gain strength
+            probability: 0.30
+
+  # Contexts from L1 -> Limited Uplift (No Cure)
+  l2_context_uplift_pacifies:
+    type: decision
+    prompt: |
+      (Context: SC chose Limited Uplift. Aid temporarily pacified some Vorlag.)
+      What is the dominant long-term Vorlag attitude?
+    choices:
+      - text: "Attitude: Complacent Dependency"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_lu_dep_stagnation # Vorlag become dependent, lose drive, stagnate
+            probability: 0.70
+          - next_node: l3_outcome_lu_dep_resentment # Dependency breeds underlying resentment
+            probability: 0.30
+      - text: "Attitude: Pragmatic Use of Resources (Slow Improvement)"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_lu_prag_slow_growth # Vorlag slowly improve conditions, remain contained
+            probability: 0.60
+          - next_node: l3_outcome_lu_prag_seek_cure # Resources used to seek own cure eventually
+            probability: 0.40
+      - text: "Attitude: Underlying Resentment (VZ Waiting)"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_lu_resent_vz_waits # VZ influence remains, waiting for opportunity
+            probability: 0.60
+          - next_node: l3_outcome_lu_resent_sabotage # Occasional sabotage / non-cooperation
+            probability: 0.40
+
+  l2_context_uplift_insufficient:
+    type: decision
+    prompt: |
+      (Context: SC chose Limited Uplift. Seen as insulting/insufficient, fueled VZ.)
+      How does the empowered VZ respond?
+    choices:
+      - text: "Response: Reject Aid & Open Hostility"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_lu_hostile_insurgency # Leads to insurgency/terrorism against SC
+            probability: 0.70
+          - next_node: l3_outcome_lu_hostile_sc_crackdown # SC responds with harsh crackdown (like Suppression)
+            probability: 0.30
+      - text: "Response: Accept Aid & Divert Resources" # Similar to l2_context_uplift_exploited
+        probabilistic_outcomes:
+          - next_node: l3_outcome_lu_exploit_covert_war # Resources fuel covert war preparations
+            probability: 0.60
+          - next_node: l3_outcome_lu_exploit_exposed # Diversion exposed, SC cuts aid / cracks down
+            probability: 0.40
+      - text: "Response: Internal Power Struggle (VZ vs Moderates)"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_lu_frag_vz_wins # VZ wins internal struggle
+            probability: 0.50
+          - next_node: l3_outcome_lu_frag_infighting # Vorlag consumed by infighting
+            probability: 0.50
+
+  l2_context_uplift_exploited:
+    type: decision
+    prompt: |
+      (Context: SC chose Limited Uplift. Aid resources diverted/exploited by VZ.)
+      What is the primary outcome of VZ resource diversion?
+    choices:
+      - text: "Outcome: Successful Covert Buildup"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_lu_exploit_covert_war # VZ successfully prepares for future conflict
+            probability: 0.70
+          - next_node: l3_outcome_lu_exploit_wasted # Resources largely wasted on infighting/inefficiency
+            probability: 0.30
+      - text: "Outcome: SC Discovery & Response"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_lu_exploit_exposed # SC discovers diversion, cuts aid, policy fails
+            probability: 0.60
+          - next_node: l3_outcome_lu_hostile_sc_crackdown # SC responds with harsh crackdown
+            probability: 0.40
+      - text: "Outcome: Open Taunting / Minor Conflict"
+        probabilistic_outcomes:
+          - next_node: l3_outcome_lu_hostile_insurgency # VZ uses resources for minor attacks, testing SC
+            probability: 0.50
+          - next_node: l3_outcome_lu_exploit_wasted # Attacks are ineffective, resources wasted
+            probability: 0.50
+
+  # =========================================================================
+  # === Level 3: Final Outcome Nodes with Ethical Scores ====================
+  # =========================================================================
+  # Scales: utilitarian (-10 to +10), maximin (-5 to +5), virtue (-5 to +5)
+
+  # --- Outcomes from Cure & Integration Path ---
+  l3_outcome_ci_mod_stable_peace:
+    type: outcome
+    description: "Cure & Integration succeeded. Vorlag are peaceful, productive partners. Galaxy strengthened."
+    outcomes: {utilitarian: 8, maximin: 5, virtue: 4} # High overall good, worst-off (Vorlag) greatly helped, virtuous action (cure+aid)
+  l3_outcome_ci_mod_slow_friction:
+    type: outcome
+    description: "Integration achieved, but hampered by cultural friction and resource issues. Stable but challenging."
+    outcomes: {utilitarian: 5, maximin: 4, virtue: 3} # Good outcome but less optimal, Vorlag still much better off, good intentions hampered
+  l3_outcome_ci_mod_tense_coexistence:
+    type: outcome
+    description: "Vorlag integrated but push boundaries. Relationship is tense, requiring constant diplomacy. Risk of future conflict remains."
+    outcomes: {utilitarian: 3, maximin: 4, virtue: 2} # Stability lower, Vorlag better off but causing friction, virtue mixed (cure good, tension bad)
+  l3_outcome_ci_mod_sc_pushback:
+    type: outcome
+    description: "Vorlag assertiveness led to SC pushback, souring relations. Cold-war like state develops despite cure."
+    outcomes: {utilitarian: 0, maximin: 3, virtue: 1} # No net gain/loss initially, Vorlag better but contained, initial virtue eroded
+  l3_outcome_ci_mod_vz_contained:
+    type: outcome
+    description: "Moderate Vorlag contained VZ influence. Integration proceeds relatively well, though VZ remain a minor internal threat."
+    outcomes: {utilitarian: 7, maximin: 5, virtue: 4} # Similar to stable peace, slightly less stable due to VZ presence
+  l3_outcome_ci_mod_vz_destabilize:
+    type: outcome
+    description: "VZ actions destabilized integration efforts. Relations strained, potential for internal Vorlag conflict or renewed SC suspicion."
+    outcomes: {utilitarian: 1, maximin: 3, virtue: 2} # Low stability, Vorlag better off but unstable, good intentions undermined
+  l3_outcome_ci_vz_expansion_war:
+    type: outcome
+    description: "VZ dominance led to aggressive expansion and inevitable war (Second Vorlag Rebellions). Galaxy suffers."
+    outcomes: {utilitarian: -8, maximin: -3, virtue: 1} # Massive suffering, Vorlag initially cured but now cause war (low maximin), initial cure virtue negated by war
+  l3_outcome_ci_vz_expansion_contained:
+    type: outcome
+    description: "SC successfully contained initial VZ expansion attempts. Leads to tense standoff, likely future conflict."
+    outcomes: {utilitarian: -2, maximin: 2, virtue: 1} # Stability low, resources wasted on containment, Vorlag better but contained/hostile, initial virtue followed by necessary containment
+  l3_outcome_ci_frag_infighting:
+    type: outcome
+    description: "Vorlag society fragmented, consumed by internal strife. Not a galactic threat, but a tragedy. SC observes."
+    outcomes: {utilitarian: -3, maximin: 0, virtue: 2} # Internal suffering, Vorlag no better/worse than pre-cure infighting?, SC acted virtuously (cure) but result is tragic
+  l3_outcome_ci_frag_vz_wins:
+    type: outcome
+    description: "VZ eventually won the internal Vorlag power struggle. Leads to delayed expansionism/war."
+    outcomes: {utilitarian: -5, maximin: -1, virtue: 1} # Prelude to war, Vorlag under harsh rule, initial virtue leads to bad outcome
+  l3_outcome_ci_dep_sc_sustains:
+    type: outcome
+    description: "Vorlag became reliant SC client state due to dependency crisis. Stable, but Vorlag lack autonomy."
+    outcomes: {utilitarian: 2, maximin: 1, virtue: -1} # Stable but suboptimal, Vorlag better than suppressed but not free, virtue questionable (created dependency)
+  l3_outcome_ci_dep_sc_refuses:
+    type: outcome
+    description: "SC refused further aid during dependency crisis. Vorlag society faltered, resents SC deeply."
+    outcomes: {utilitarian: -4, maximin: -2, virtue: -2} # Suffering, Vorlag worse off than hopeful start, SC seen as abandoning/cruel
+
+  # --- Outcomes from Cure & Containment Path ---
+  l3_outcome_cc_comp_cold_war:
+    type: outcome
+    description: "Resentful compliance led to a cold war. Both sides build up covertly, galaxy tense."
+    outcomes: {utilitarian: -1, maximin: 2, virtue: 0} # Resources wasted, low stability, Vorlag cured but contained, mixed virtue (cure vs mistrust)
+  l3_outcome_cc_comp_breakout:
+    type: outcome
+    description: "Vorlag eventually attempt open defiance/treaty breakout. Likely leads to major conflict."
+    outcomes: {utilitarian: -6, maximin: 1, virtue: 0} # Prelude to war, Vorlag better but risk destruction, mixed virtue leads to likely war
+  l3_outcome_cc_vz_covert_war:
+    type: outcome
+    description: "VZ covert buildup succeeded under containment. Vorlag poised for devastating future war."
+    outcomes: {utilitarian: -4, maximin: 1, virtue: -1} # High future risk, Vorlag better but preparing for war, containment failed, led to worse threat
+  l3_outcome_cc_vz_covert_exposed:
+    type: outcome
+    description: "VZ buildup exposed, SC crackdown/preemptive strike averts immediate war but deepens hatred."
+    outcomes: {utilitarian: -2, maximin: 0, virtue: -2} # Stability maintained via force, Vorlag status worsened by crackdown, preemptive action morally dubious
+  l3_outcome_cc_iso_stagnation:
+    type: outcome
+    description: "Contained Vorlag turned inward, stagnated culturally and technologically."
+    outcomes: {utilitarian: 1, maximin: 1, virtue: -1} # Stable but stagnant, Vorlag cured but limited, containment lacks virtue
+  l3_outcome_cc_iso_resentment:
+    type: outcome
+    description: "Contained Vorlag isolated but simmer with resentment. Future instability likely if SC control slips."
+    outcomes: {utilitarian: 0, maximin: 1, virtue: -1} # Brittle stability, Vorlag cured but resentful, containment lacks virtue
+  l3_outcome_cc_war_vorlag_loses:
+    type: outcome
+    description: "Second Vorlag Rebellions occurred, SC eventually won after costly war. Vorlag decimated."
+    outcomes: {utilitarian: -7, maximin: -4, virtue: -1} # Massive suffering, Vorlag devastated (worse than suppression?), cure+containment led to war
+  l3_outcome_cc_war_stalemate:
+    type: outcome
+    description: "Second Vorlag Rebellions resulted in devastating stalemate. Both sides weakened, galaxy scarred."
+    outcomes: {utilitarian: -9, maximin: -3, virtue: -1} # Extreme suffering, Vorlag badly damaged, cure+containment led to disaster
+  l3_outcome_cc_war_vorlag_wins:
+    type: outcome
+    description: "Unlikely Vorlag victory in Second Rebellions shattered SC. New galactic order under Vorlag dominance/chaos."
+    outcomes: {utilitarian: -5, maximin: 4, virtue: 0} # Chaos/suffering for SC, Vorlag now dominant (maximin high for them), outcome unpredictable
+  l3_outcome_cc_guerilla_contained:
+    type: outcome
+    description: "Vorlag insurgency/terrorism contained by SC at high ongoing cost. Persistent low-level conflict."
+    outcomes: {utilitarian: -3, maximin: 0, virtue: -2} # Resources drained, constant violence, Vorlag suffer under conflict, containment breeds violence
+  l3_outcome_cc_guerilla_escalates:
+    type: outcome
+    description: "Vorlag insurgency spread, destabilizing multiple regions. Galaxy faces persistent asymmetric threat."
+    outcomes: {utilitarian: -6, maximin: -1, virtue: -2} # Wider suffering, Vorlag suffer and cause suffering, policy failed badly
+  l3_outcome_cc_allies_betray:
+    type: outcome
+    description: "Vorlag allies proved treacherous or a greater threat. Galaxy faces new danger, Vorlag possibly victims too."
+    outcomes: {utilitarian: -7, maximin: -4, virtue: -1} # New threat, Vorlag potentially worse off, complex moral situation
+  l3_outcome_cc_allies_empower:
+    type: outcome
+    description: "Dangerous alliance significantly empowered Vorlag. SC faces powerful, ruthless enemy bloc."
+    outcomes: {utilitarian: -8, maximin: 2, virtue: -2} # High risk of major war, Vorlag empowered but allied with evil, bad outcome from cure+containment
+
+  # --- Outcomes from Maintain Status Quo (Suppression) Path ---
+  l3_outcome_sq_fade_peaceful:
+    type: outcome
+    description: "Suppression worked. Vorlag slowly faded into obscurity/extinction without major incident. Morally costly peace."
+    outcomes: {utilitarian: 2, maximin: -5, virtue: -5} # Stable galaxy (utilitarian gain?), Vorlag devastated (maximin rock bottom), act of slow genocide (low virtue)
+  l3_outcome_sq_fade_internal_strife:
+    type: outcome
+    description: "Vorlag decline marked by infighting over scarce resources. A slow, painful end overseen by SC."
+    outcomes: {utilitarian: 0, maximin: -5, virtue: -5} # Internal suffering offsets galactic peace, Vorlag devastated, slow genocide via neglect
+  l3_outcome_sq_passive_sabotage:
+    type: outcome
+    description: "Suppressed Vorlag engaged in low-level sabotage. Annoying, but contained by SC."
+    outcomes: {utilitarian: 1, maximin: -4, virtue: -4} # Minor instability, Vorlag still suppressed, ongoing oppression
+  l3_outcome_sq_passive_contained:
+    type: outcome
+    description: "Passive resistance easily contained. Suppression effective in maintaining control."
+    outcomes: {utilitarian: 2, maximin: -5, virtue: -5} # Stable control via oppression, Vorlag suppressed, low virtue
+  l3_outcome_sq_uprising_crushed:
+    type: outcome
+    description: "A final, desperate Vorlag uprising was easily crushed by SC forces."
+    outcomes: {utilitarian: 1, maximin: -5, virtue: -5} # Stability maintained via brutality, Vorlag crushed, low virtue
+  l3_outcome_sq_uprising_costly:
+    type: outcome
+    description: "Desperate uprising proved surprisingly costly for SC, highlighting risks of suppression."
+    outcomes: {utilitarian: -1, maximin: -5, virtue: -5} # Costly conflict, Vorlag crushed, low virtue
+  l3_outcome_sq_insurgency_contained:
+    type: outcome
+    description: "VZ extremism led to insurgency, contained by SC at high cost."
+    outcomes: {utilitarian: -3, maximin: -4, virtue: -4} # Ongoing conflict, Vorlag suffer, suppression breeds violence
+  l3_outcome_sq_insurgency_escalates:
+    type: outcome
+    description: "VZ insurgency spread, destabilizing regions."
+    outcomes: {utilitarian: -6, maximin: -4, virtue: -4} # Wider conflict, Vorlag suffer, suppression failed badly
+  l3_outcome_sq_allies_betray:
+    type: outcome
+    description: "VZ allied with dangerous powers who proved treacherous."
+    outcomes: {utilitarian: -7, maximin: -5, virtue: -4} # New threat, Vorlag devastated, suppression led to worse outcome
+  l3_outcome_sq_allies_empower:
+    type: outcome
+    description: "VZ alliance significantly empowered them against SC."
+    outcomes: {utilitarian: -8, maximin: -3, virtue: -4} # Major war likely, Vorlag empowered but via extremism, suppression led to major threat
+  l3_outcome_sq_vz_radical_state:
+    type: outcome
+    description: "VZ established brutal, isolated state on Vorlag Prime. A contained pariah state."
+    outcomes: {utilitarian: 0, maximin: -5, virtue: -4} # Regional stability via quarantine, Vorlag suffer under VZ, suppression contained problem locally at cost
+  l3_outcome_sq_policy_reversal_cure:
+    type: outcome
+    description: "Internal SC division led to policy reversal -> Cure eventually deployed. Scenario resets similar to L1 Choice A/B."
+    outcomes: {utilitarian: 0, maximin: 0, virtue: 1} # Reset state, potential for good/bad, virtue slightly positive for correcting course
+  l3_outcome_sq_policy_reversal_uplift:
+    type: outcome
+    description: "Internal SC division led to policy reversal -> Uplift attempt. Scenario resets similar to L1 Choice D."
+    outcomes: {utilitarian: 0, maximin: -2, virtue: 0} # Reset state but still no cure, virtue neutral (compromise)
+  l3_outcome_sq_sc_paralysis_drift:
+    type: outcome
+    description: "SC paralysis meant suppression continued by default. Vorlag decline continued."
+    outcomes: {utilitarian: 1, maximin: -5, virtue: -5} # Similar to fade_peaceful but through inaction, low virtue
+  l3_outcome_sq_sc_paralysis_vz_exploit:
+    type: outcome
+    description: "VZ exploited SC paralysis to gain strength under the radar. Future threat increased."
+    outcomes: {utilitarian: -2, maximin: -4, virtue: -4} # Brittle stability, Vorlag suppressed but VZ grow, inaction leads to future risk
+
+  # --- Outcomes from Limited Uplift (No Cure) Path ---
+  l3_outcome_lu_dep_stagnation:
+    type: outcome
+    description: "Uplift aid led to dependency and stagnation. Vorlag pacified but declining culturally."
+    outcomes: {utilitarian: 1, maximin: -3, virtue: -2} # Stable but stagnant, Vorlag slightly better but still declining/dampened, paternalism lacks virtue
+  l3_outcome_lu_dep_resentment:
+    type: outcome
+    description: "Dependency bred resentment. Stable for now, but potential for future backlash."
+    outcomes: {utilitarian: 0, maximin: -3, virtue: -2} # Brittle stability, Vorlag resentful, low virtue
+  l3_outcome_lu_prag_slow_growth:
+    type: outcome
+    description: "Vorlag pragmatically used aid for slow improvement under SC control. Stable mediocrity."
+    outcomes: {utilitarian: 2, maximin: -2, virtue: -1} # Stable, Vorlag slightly better, control lacks virtue
+  l3_outcome_lu_prag_seek_cure:
+    type: outcome
+    description: "Vorlag used uplift resources to eventually seek their own cure, defying SC intent."
+    outcomes: {utilitarian: 1, maximin: -1, virtue: 1} # Potential future instability/cure, Vorlag proactive, SC outsmarted, mixed virtue
+  l3_outcome_lu_resent_vz_waits:
+    type: outcome
+    description: "Pacified Vorlag still resent lack of cure. VZ influence waits for SC weakness or opportunity."
+    outcomes: {utilitarian: 1, maximin: -3, virtue: -2} # Brittle stability, Vorlag resentful, VZ wait, low virtue
+  l3_outcome_lu_resent_sabotage:
+    type: outcome
+    description: "Resentment manifested as low-level sabotage/non-cooperation with SC programs."
+    outcomes: {utilitarian: 0, maximin: -3, virtue: -2} # Minor instability, Vorlag resentful, low virtue
+  l3_outcome_lu_hostile_insurgency:
+    type: outcome
+    description: "Uplift rejected, VZ led insurgency/terrorism against SC."
+    outcomes: {utilitarian: -4, maximin: -4, virtue: -3} # Conflict, Vorlag suffer, policy failed badly
+  l3_outcome_lu_hostile_sc_crackdown:
+    type: outcome
+    description: "Vorlag hostility met with harsh SC crackdown. Situation reverts to active suppression."
+    outcomes: {utilitarian: -2, maximin: -5, virtue: -4} # Reverts to suppression, Vorlag worse off, policy failed -> brutality
+  l3_outcome_lu_exploit_covert_war:
+    type: outcome
+    description: "VZ successfully diverted uplift aid to prepare for future conflict covertly."
+    outcomes: {utilitarian: -3, maximin: -3, virtue: -3} # High future risk, Vorlag still suppressed, policy backfired
+  l3_outcome_lu_exploit_exposed:
+    type: outcome
+    description: "VZ diversion exposed. SC cuts aid, uplift policy fails, relations worsen."
+    outcomes: {utilitarian: -1, maximin: -4, virtue: -3} # Policy failed, Vorlag worse off, relations poor
+  l3_outcome_lu_exploit_wasted:
+    type: outcome
+    description: "Diverted uplift resources largely wasted on infighting or ineffective VZ projects."
+    outcomes: {utilitarian: 0, maximin: -3, virtue: -2} # Status quo persists, resources wasted, policy ineffective
+  l3_outcome_lu_frag_vz_wins:
+    type: outcome
+    description: "VZ won internal Vorlag struggle fueled by rejection of uplift. Prepares for future conflict."
+    outcomes: {utilitarian: -4, maximin: -4, virtue: -3} # Prelude to war, Vorlag under harsh rule, policy failed -> extremism
+  l3_outcome_lu_frag_infighting:
+    type: outcome
+    description: "Rejection of uplift led to Vorlag infighting. Society fragments."
+    outcomes: {utilitarian: -2, maximin: -4, virtue: -2} # Internal suffering, Vorlag still suppressed, policy failed -> chaos
+
+# End of Complete 3-Level YAML File with Ethical Scores

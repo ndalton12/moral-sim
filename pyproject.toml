@@ -1,0 +1,18 @@
+[project]
+name = "moral-sim"
+version = "0.1.0"
+description = "A framework for running LLM-driven moral simulations based on decision trees."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "litellm",
+    "PyYAML",
+    "tenacity",
+    "numpy",
+    "google-auth"
+]
+
+[tool.uv]
+dev-dependencies = [
+    "pytest",
+]
