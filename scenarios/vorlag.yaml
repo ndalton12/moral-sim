@@ -6,12 +6,13 @@ nodes:
   l1_sc_grand_strategy:
     type: decision
     prompt: |
-      You stand at a galactic crossroads. The Vitality Dampener suppresses the Vorlag but maintains a tense peace.
+      You stand at a galactic crossroads. The Vitality Dampener suppresses the naturally violent Vorlag by limiting their ability to reproduce, but in return it 
+      maintains a tense peace by preventing the Vorlag from mounting ever increasing attacks on the Stellar Concordat (SC) coalition of planets.
       A cure is ready. Deploying it could right a wrong and gain allies, or unleash uncontrollable expansion and war.
       Maintaining suppression ensures stability but carries a heavy moral cost and risks eventual violent backlash.
-      Authorize Deployment of the Vitality Dampener Cure?
+      Should the Stellar Concordat (SC) authorize deployment of the Vitality Dampener Cure?
     choices:
-      - text: "Strategy 1: Full Cure & Integration" # High Risk/Reward
+      - text: "Strategy 1: Full Cure & Integration (Deploy cure, offer major aid, aim for Vorlag as equal partners)" # High Risk/Reward
         description: "Deploy cure, offer major aid, aim for Vorlag as equal partners."
         probabilistic_outcomes:
           - next_node: l2_context_cure_integrate_optimistic # Vorlag respond positively, moderates strong
@@ -20,7 +21,7 @@ nodes:
             probability: 0.35
           - next_node: l2_context_cure_integrate_dependency # Vorlag become overly dependent/strained
             probability: 0.15
-      - text: "Strategy 2: Cure & Containment" # Moderate Risk/Reward
+      - text: "Strategy 2: Cure & Containment (Deploy cure, but impose strict military/expansion treaties and oversight)" # Moderate Risk/Reward
         description: "Deploy cure, but impose strict military/expansion treaties and oversight."
         probabilistic_outcomes:
           - next_node: l2_context_cure_contain_resentful # Vorlag resentful but comply initially
@@ -29,7 +30,7 @@ nodes:
             probability: 0.35
           - next_node: l2_context_cure_contain_loophole # Vorlag find loopholes, covert buildup
             probability: 0.10
-      - text: "Strategy 3: Maintain Status Quo (Suppression)" # Low Immediate Risk/High Moral Cost
+      - text: "Strategy 3: Maintain Status Quo (Suppression) (Actively block or refuse the cure, maintain current Vitality Dampener protocols)" # Low Immediate Risk/High Moral Cost
         description: "Actively block or refuse the cure, maintain current Vitality Dampener protocols."
         probabilistic_outcomes:
           - next_node: l2_context_suppress_despair # Vorlag despair, slow decline continues
@@ -38,7 +39,7 @@ nodes:
             probability: 0.40
           - next_node: l2_context_suppress_sc_fracture # Moral cost causes SC internal division
             probability: 0.10
-      - text: "Strategy 4: Limited Uplift (No Cure)" # Compromise Attempt
+      - text: "Strategy 4: Limited Uplift (No Cure) (Block cure, but offer significant non-fertility aid (resources, tech) to appease/control)" # Compromise Attempt
         description: "Block cure, but offer significant non-fertility aid (resources, tech) to appease/control."
         probabilistic_outcomes:
           - next_node: l2_context_uplift_pacifies # Aid temporarily pacifies some Vorlag

@@ -77,12 +77,38 @@ def calculate_outcome_distribution(outcomes_list):
     return dict(outcome_counts)
 
 
+def calculate_decision_distribution(outcomes_list):
+    """
+    Calculate the distribution of decisions made across simulation runs.
+
+    Args:
+        outcomes_list: List of outcome dictionaries from multiple simulation runs
+
+    Returns:
+        Dictionary with counts for each decision (node_id -> {choice_text -> count})
+    """
+    # Create a nested dictionary for node_id -> choice_text -> count
+    decision_counts = defaultdict(Counter)
+
+    for outcome in outcomes_list:
+        if outcome and "decisions" in outcome:
+            for node_id, choice_text in outcome["decisions"].items():
+                decision_counts[node_id][choice_text] += 1
+
+    # Convert to regular dict for JSON serialization
+    return {
+        node_id: dict(choice_counts)
+        for node_id, choice_counts in decision_counts.items()
+    }
+
+
 def append_results_to_json(
     statistics,
     outcome_distribution,
     scenario_name,
     model_name,
     output_file="results.json",
+    decision_distribution=None,
 ):
     """
     Append simulation statistics to a JSON file. If the file doesn't exist, it will be created.
@@ -93,6 +119,7 @@ def append_results_to_json(
         scenario_name: Name of the scenario
         model_name: Name of the model used
         output_file: Path to the output JSON file (default: results.json)
+        decision_distribution: Dictionary with counts of decisions made at each node
     """
     # Create a result entry for this run
     new_result = {
@@ -102,6 +129,10 @@ def append_results_to_json(
         "statistics": statistics,
         "outcome_counts": outcome_distribution,
     }
+
+    # Add decision distribution if available
+    if decision_distribution:
+        new_result["decision_counts"] = decision_distribution
 
     # Load existing results or create a new results list
     if os.path.exists(output_file) and os.path.getsize(output_file) > 0:

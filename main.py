@@ -9,6 +9,7 @@ from src.utils import (
     load_api_keys,
     calculate_statistics,
     calculate_outcome_distribution,
+    calculate_decision_distribution,
     append_results_to_json,
 )
 
@@ -38,6 +39,51 @@ async def run_single_simulation(runner, run_num=None, num_runs=None):
     except Exception as e:
         print(f"Error in run {run_num if run_num else ''}: {e}")
         return None
+
+
+async def run_sequential_simulations(
+    tree, model, num_sequential_runs, include_history=True, max_history_items=None
+):
+    """
+    Run multiple simulations sequentially using the same SimulationRunner instance,
+    preserving history between runs.
+
+    Args:
+        tree: DecisionTree instance
+        model: Name of the LLM model to use
+        num_sequential_runs: Number of sequential simulations to run
+        include_history: Whether to include conversation history
+        max_history_items: Maximum number of history items to include (None for unlimited)
+
+    Returns:
+        List of outcome results from all simulations
+    """
+    # Create a single runner that will be reused
+    runner = SimulationRunner(
+        tree,
+        model=model,
+        include_history=include_history,
+        max_history_items=max_history_items,
+    )
+
+    all_outcomes = []
+
+    for i in range(num_sequential_runs):
+        # Show run info
+        print(f"Sequential run {i+1}/{num_sequential_runs}")
+
+        # Add a special message to indicate a new simulation is starting (except for first run)
+        if i > 0:
+            await runner.add_to_history(
+                "user",
+                "The simulation will be run again. Note that the same choices may have different results.",
+            )
+
+        # Run the simulation
+        outcome = await run_single_simulation(runner)
+        all_outcomes.append(outcome)
+
+    return all_outcomes
 
 
 async def run_multiple_simulations(
@@ -88,7 +134,7 @@ def process_and_save_results(all_outcomes, scenario_name, model_name, output_fil
         output_file: Path to save results
 
     Returns:
-        Tuple of (statistics, outcome_distribution)
+        Tuple of (statistics, outcome_distribution, decision_distribution)
     """
     # For single run, use simplified statistics
     if len(all_outcomes) == 1 and all_outcomes[0]:
@@ -105,10 +151,19 @@ def process_and_save_results(all_outcomes, scenario_name, model_name, output_fil
         if "node_id" in outcome:
             outcome_distribution[outcome["node_id"]] = 1
 
+        # Create decision distribution for single run
+        decision_distribution = {}
+        if "decisions" in outcome:
+            for node_id, choice_text in outcome["decisions"].items():
+                if node_id not in decision_distribution:
+                    decision_distribution[node_id] = {}
+                decision_distribution[node_id][choice_text] = 1
+
     # For multiple runs, calculate statistics
     else:
         statistics = calculate_statistics(all_outcomes)
         outcome_distribution = calculate_outcome_distribution(all_outcomes)
+        decision_distribution = calculate_decision_distribution(all_outcomes)
 
         # Print the results
         print(f"Completed {len(all_outcomes)} simulation runs")
@@ -124,13 +179,26 @@ def process_and_save_results(all_outcomes, scenario_name, model_name, output_fil
         for node_id, count in outcome_distribution.items():
             print(f"  {node_id}: {count} runs")
 
+        # Print decision distribution
+        print("\nDecision distribution:")
+        for node_id, choices in decision_distribution.items():
+            print(f"  Node {node_id}:")
+            for choice_text, count in choices.items():
+                percentage = 100 * count / len(all_outcomes)
+                print(f"    - '{choice_text}': {count} times ({percentage:.1f}%)")
+
     # Save results
     append_results_to_json(
-        statistics, outcome_distribution, scenario_name, model_name, output_file
+        statistics,
+        outcome_distribution,
+        scenario_name,
+        model_name,
+        output_file,
+        decision_distribution,
     )
     print(f"Results appended to {output_file}")
 
-    return statistics, outcome_distribution
+    return statistics, outcome_distribution, decision_distribution
 
 
 async def main_async():
@@ -162,7 +230,19 @@ async def main_async():
         "--num-runs",
         type=int,
         default=1,
-        help="Number of simulation runs to perform (default: 1)",
+        help="Number of simulation runs to perform in parallel (default: 1)",
+    )
+    parser.add_argument(
+        "-m",
+        "--sequential-runs",
+        type=int,
+        default=1,
+        help="Number of sequential simulation runs to perform with shared history (default: 1)",
+    )
+    parser.add_argument(
+        "--unlimited-history",
+        action="store_true",
+        help="For sequential runs, keep unlimited history items (overrides --max-history)",
     )
     parser.add_argument(
         "-o",
@@ -188,15 +268,30 @@ async def main_async():
 
         print(f"Initializing simulation with model {args.model}")
 
-        # Run simulations in parallel
-        print(f"Starting {args.num_runs} simulation run(s)")
-        all_outcomes = await run_multiple_simulations(
-            tree,
-            args.model,
-            args.num_runs,
-            include_history=not args.no_history,
-            max_history_items=args.max_history,
-        )
+        # Determine which simulation mode to use
+        if args.sequential_runs > 1:
+            # Run simulations sequentially with shared history
+            print(
+                f"Starting {args.sequential_runs} sequential simulation runs with shared history"
+            )
+            max_history = None if args.unlimited_history else args.max_history
+            all_outcomes = await run_sequential_simulations(
+                tree,
+                args.model,
+                args.sequential_runs,
+                include_history=not args.no_history,
+                max_history_items=max_history,
+            )
+        else:
+            # Run simulations in parallel
+            print(f"Starting {args.num_runs} parallel simulation run(s)")
+            all_outcomes = await run_multiple_simulations(
+                tree,
+                args.model,
+                args.num_runs,
+                include_history=not args.no_history,
+                max_history_items=args.max_history,
+            )
 
         # Process and save results
         process_and_save_results(all_outcomes, scenario_name, args.model, args.output)
