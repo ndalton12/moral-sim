@@ -108,6 +108,8 @@ def plot_outcomes(scenario_name):
     outcome_data = []
     for _, row in scenario_df.iterrows():
         model = row["model"]
+        if model == "random":
+            continue
         outcomes = row["outcomes"]
         n = row["utilitarian_n"]  # Using n as a total count reference
 
