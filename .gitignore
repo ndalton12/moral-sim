@@ -9,3 +9,5 @@ api_keys.json
 
 # Virtual environments
 .venv
+
+.DS_Store

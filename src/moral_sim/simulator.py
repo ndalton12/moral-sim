@@ -178,6 +178,8 @@ class SimulationRunner:
 
         messages.append({"role": "user", "content": prompt})
 
+        breakpoint()
+
         return messages
 
     @retry(
